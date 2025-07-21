@@ -1,33 +1,13 @@
-
 <?php
     use Vennizlab\Agendaki\helpers\Flash;
-
-    if (Flash::has('erro'))
-        echo '<p style="color:red;">' . Flash::get('erro') . '</p>';
-
-    if (Flash::has('sucesso'))
-        echo '<p style="color:green;">' . Flash::get('sucesso') . '</p>';
+    Flash::print( ); 
 ?>
 
-<section>
-    <h1>Login</h1>
-
-    <form action="login" method="post">
-
-        <label for="login">Telefone ou email</label>
-        <input type="text" name="login" id="login">
-
-        <label for="senha">Senha</label>
-        <input type="password" name="senha" id="senha">
-
-        <button type="submit">Entrar</button>
-    </form>
-</section>
+<a href="/funcionario">Voltar</a>
 
 <section>
     <h1>Cadastro</h1>
-
-    <form action="cadastrar" method="post">
+    <form action="/funcionario/cadastrar" method="post">
         <label for="nome">Nome</label>
         <input type="text" name="nome" id="nome">
 

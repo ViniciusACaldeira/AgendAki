@@ -3,14 +3,9 @@
 namespace Vennizlab\Agendaki\models;
 
 use PDO;
+use Vennizlab\Agendaki\core\Model;
 
-class UsuarioModel{
-    protected $db;
-
-    public function __construct()
-    {
-        $this->db = require(__DIR__.'/../../config/database.php');
-    }
+class UsuarioModel extends Model{
 
     public function all( )
     {
@@ -77,7 +72,10 @@ class UsuarioModel{
         $sucesso = $stmt->execute([$nome, $email, $telefone, $senhaHash]);
 
         if ($sucesso)
-            return ['sucesso' => 'Usuário cadastrado com sucesso.'];
+        {
+            $id = $this->db->lastInsertId();
+            return ['sucesso' => 'Usuário cadastrado com sucesso.', 'id' => $id];
+        }
         else
             return ['erro' => 'Erro ao cadastrar usuário.'];
     }

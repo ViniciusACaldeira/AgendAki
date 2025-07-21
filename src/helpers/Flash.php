@@ -22,4 +22,13 @@ class Flash
     {
         return isset($_SESSION['flash'][$key]);
     }
+
+    public static function print( )
+    {
+        if (Flash::has('erro'))
+            echo '<p style="color:red;">' . Flash::get('erro') . '</p>';
+
+        if (Flash::has('sucesso'))
+            echo '<p style="color:green;">' . Flash::get('sucesso') . '</p>';
+    }
 }
