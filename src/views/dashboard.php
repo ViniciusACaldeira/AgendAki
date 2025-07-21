@@ -13,6 +13,12 @@
                 <li><a href="/funcionario/cadastro">Cadastrar Funcionário</a></li>
             </ul>
         </li>
+        <li>
+            <a href="/servico">Serviço</a>
+            <ul>
+                <li><a href="/servico/cadastro">Cadastrar Serviço</a></li>
+            </ul>
+        </li>
     </ul>
 </nav>
 
