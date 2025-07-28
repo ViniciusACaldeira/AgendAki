@@ -1,0 +1,92 @@
+<?php
+namespace Vennizlab\Agendaki\controllers;
+
+use Vennizlab\Agendaki\core\Controller;
+use Vennizlab\Agendaki\models\FuncionarioModel;
+use Vennizlab\Agendaki\models\ServicoModel;
+
+class ServicoControllerAPI extends Controller
+{
+    public function servicoByFuncionario( )
+    {
+        if( $_SERVER['REQUEST_METHOD'] == "GET" )
+        {
+            $id = $_GET['id'] ?? null;
+
+            if( isset( $id ) )
+            {
+                $servicoModel = new ServicoModel( );
+                $servicos = $servicoModel->getByFuncionario( $id );
+
+                if( !isset($servicos) )
+                    $servicos = [];
+
+                return $this->response( 200, $servicos );
+            }
+
+            return $this->response( 400, "O parametro id é obrigatório.");
+        }
+        else
+            return $this->response( 404, "Não encontrado." );
+    }
+
+    public function cadastrarServicoFuncionario( )
+    {
+        if( $_SERVER['REQUEST_METHOD'] == "POST" )
+        {
+            $funcionario_id = $_POST['funcionario_id'] ?? null;
+            $servicos = $_POST['servico'] ?? null;
+
+            $validacao = "";
+
+            if( !isset($funcionario_id) )
+                $validacao .= "Funcionário obrigatório.\n";
+            else
+            {
+                $funcionario_model = new FuncionarioModel( );
+                $funcionario = $funcionario_model->getById( $funcionario_id );
+
+                if( !$funcionario )
+                    $validacao .= "Funcionário ($funcionario_id) não encontrado.";
+            }
+
+            if( !isset($servicos) )
+                $validacao .= "Serviço(s) obrigatório.\n";
+            else
+            {
+                $servicos = json_decode($servicos);
+                
+                if( !is_array($servicos) )
+                    $validacao .= "Serviço precisa ser um array.";
+                else
+                {
+                    $servicoModel = new ServicoModel( );
+
+                    if( !$servicoModel->existeServico( $servicos ) )
+                        $validacao .= "Algum serviço não foi encontrado.";
+                }
+            }
+
+            if( $validacao != "" )
+                return $this->response(400, $validacao);
+        
+            $servicoModel = new ServicoModel( );
+            $sucesso = $servicoModel->addFuncionarioServico( $funcionario_id, $servicos );
+
+            if( $sucesso )
+                return $this->response( 200, "Serviços vínculado ao funcionário.");
+            else
+                return $this->response( 400, "Falha ao víncular os serviços ao funcionário.");
+        }
+        else
+            return $this->response( 404, "Não encontrado.");
+    }
+
+    public function getServicos( )
+    {
+        $servicoModel = new ServicoModel( );
+        $servicos = $servicoModel->getAll( );
+        
+        return $this->response( 200, $servicos );
+    }
+}

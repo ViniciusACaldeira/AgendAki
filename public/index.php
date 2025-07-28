@@ -8,7 +8,8 @@ if( session_status() != PHP_SESSION_ACTIVE)
 $routes = require __DIR__ . '/../routes/web.php';
 
 // Obtém URL da requisição (padrão: users/index)
-$url = $_SERVER['REQUEST_URI'] ?? 'login';
+$url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? 'auth/login';
+$url = rtrim($url, '/');
 
 if (array_key_exists($url, $routes)) {
     [$controllerClass, $method] = $routes[$url];

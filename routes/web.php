@@ -1,9 +1,11 @@
 <?php
 
+use Vennizlab\Agendaki\controllers\AgendaController;
 use Vennizlab\Agendaki\controllers\FuncionarioController;
 use Vennizlab\Agendaki\controllers\HomeController;
 use Vennizlab\Agendaki\controllers\UsuarioController;
 use Vennizlab\Agendaki\controllers\ServicoController;
+use Vennizlab\Agendaki\controllers\ServicoControllerAPI;
 
 // Lista de rotas: 'url' => [Classe, 'método']
 return [
@@ -19,5 +21,13 @@ return [
     '/servico/cadastro' => [ServicoController::class, 'cadastro'],
     '/servico/cadastrar' => [ServicoController::class, 'cadastrar'],
     
+    '/agenda' => [AgendaController::class, 'index'],
+    '/agenda/cadastro' => [AgendaController::class, 'cadastro'],
+    '/agenda/cadastrar' => [AgendaController::class, 'cadastrar'],
+    '/agenda/listar' => [AgendaController::class, 'listar'],
     // Adicione outras rotas aqui
+
+    '/api/servico/funcionario' => [ServicoControllerAPI::class, 'servicoByFuncionario'],
+    '/api/servico/funcionario/cadastrar' => [ServicoControllerAPI::class, 'cadastrarServicoFuncionario'],
+    '/api/servico' => [ServicoControllerAPI::class, "getServicos"],
 ];

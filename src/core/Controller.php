@@ -17,4 +17,15 @@ class Controller{
         header("Location: /{$url}");
         exit;
     }
+
+    public function response( $status, $data )
+    {
+        header('Content-Type: application/json');
+        http_response_code($status); // Opcional: define o código HTTP de resposta
+        echo json_encode([
+            "status" => $status,
+            "data" => $data
+        ]);
+        exit;
+    }
 }

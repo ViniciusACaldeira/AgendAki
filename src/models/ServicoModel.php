@@ -41,4 +41,72 @@ class ServicoModel extends Model{
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function addFuncionarioServico( $id, $servicos )
+    {
+        $parametros = "";
+        $parametros_valores = [];
+
+        for( $i = 0; $i < count($servicos);$i++ )
+        {
+            if( $i == 0 )
+                $parametros .= " VALUES (?, ?)";
+            else
+                $parametros .= ", (?, ?)";
+        }
+
+        foreach( $servicos as $servico )
+        {
+            array_push($parametros_valores, $servico);
+            array_push($parametros_valores, $id);
+        }
+
+        $stmt = $this->db->prepare("INSERT INTO funcionario_servico (servico_id, funcionario_id) $parametros");
+        $sucesso = $stmt->execute($parametros_valores);
+
+        return $sucesso;
+    }
+
+    public function getByFuncionario( $id )
+    {
+        $stmt = $this->db->prepare( "SELECT s.* FROM servico s
+                                    INNER JOIN funcionario_servico fs ON fs.servico_id = s.id
+                                    WHERE fs.funcionario_id = ? ");
+
+        $sucesso = $stmt->execute([$id]);
+
+        if( $sucesso )
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        else
+            return [];
+    }
+
+    public function existeServico( $servicos )
+    {
+        $parametros = "";
+
+        for( $i = 0; $i < count($servicos); $i++ )
+        {
+            if( $i == 0 )
+                $parametros .= " ?";
+            else
+                $parametros .= ", ?";
+        }
+
+        $stmt = $this->db->prepare( "SELECT COUNT(1) FROM servico WHERE id IN ($parametros)");
+        $stmt->execute($servicos);
+
+        $resultado = $stmt->fetchColumn();
+
+        if( !$resultado || $resultado != count($servicos) )
+            return false;
+        else
+            return true;
+    }
+
+    public function existeServicoFuncionario( $funcionario, $servico )
+    {
+        $servicos = array_column($this->getByFuncionario($funcionario), 'id');
+        return count(array_diff($servico, $servicos)) == 0;
+    }
 }

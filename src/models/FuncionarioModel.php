@@ -29,11 +29,20 @@ class FuncionarioModel extends Model{
 
     public function getAll( )
     {
-        $stmt = $this->db->prepare("SELECT * FROM funcionario f 
+        $stmt = $this->db->prepare("SELECT f.id, u.nome, u.telefone, u.email 
+                                    FROM funcionario f 
                                     INNER JOIN usuario u ON u.id = f.usuario_id");
         $stmt->execute();
         $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $usuarios;
     }
+
+    public function getById( $id )
+    {
+        $stmt = $this->db->prepare( "SELECT * FROM funcionario WHERE id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
 }
