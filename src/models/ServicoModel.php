@@ -109,4 +109,44 @@ class ServicoModel extends Model{
         $servicos = array_column($this->getByFuncionario($funcionario), 'id');
         return count(array_diff($servico, $servicos)) == 0;
     }
+
+    public function atualizaServicoFuncionario( $funcionario, $servicos )
+    {
+        $servicosFuncionario = array_column($this->getByFuncionario($funcionario), 'id');
+
+        $remover = array_diff($servicosFuncionario, $servicos);
+        $adicionar = array_diff($servicos, $servicosFuncionario);
+        
+        $sucesso = true;
+
+        if( !empty($adicionar) )
+            $sucesso = $this->addFuncionarioServico( $funcionario, $adicionar );
+        
+        if( $sucesso && !empty($remover) )
+            $sucesso = $this->removerServicoFuncionario( $funcionario, $remover );
+
+        return $sucesso;
+    }
+
+    public function removerServicoFuncionario( $funcionario_id, $servicos)
+    {
+        if( empty($servicos) )
+            return false;
+
+        $parametros = "";
+        for( $i = 0; $i < count($servicos); $i++ )
+        {
+            if( $i == 0 )
+                $parametros .= " ?";
+            else
+                $parametros .= ", ?";
+        }
+
+        $parametros_valores = array_merge([$funcionario_id], $servicos);
+
+        $stmt = $this->db->prepare("DELETE FROM funcionario_servico WHERE funcionario_id = ? and servico_id IN ($parametros) ");
+        $retorno = $stmt->execute( $parametros_valores );
+
+        return $retorno;
+    }
 }

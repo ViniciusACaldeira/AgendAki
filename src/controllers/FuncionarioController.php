@@ -5,6 +5,7 @@ namespace Vennizlab\Agendaki\controllers;
 use Vennizlab\Agendaki\core\Controller;
 use Vennizlab\Agendaki\helpers\Flash;
 use Vennizlab\Agendaki\models\FuncionarioModel;
+use Vennizlab\Agendaki\models\ServicoModel;
 
 class FuncionarioController extends Controller{
 
@@ -29,5 +30,25 @@ class FuncionarioController extends Controller{
     function cadastro( )
     {
         return $this->view("funcionario/cadastro");
+    }
+
+    function detalhe( )
+    {
+        return $this->view("funcionario/detalhe");
+    }
+
+    function atualizaServico( )
+    {
+        $servicoModel = new ServicoModel( );
+
+        $servicos = $_POST['servicos'] ?? [];
+        $funcionario = $_POST['funcionario_id'];
+
+        if( $servicoModel->atualizaServicoFuncionario( $funcionario, $servicos ) )
+            Flash::set("sucesso", "Serviços atualizados com sucesso.");
+        else
+            Flash::set("erro", "Falha ao atualizar os serviços.");
+
+        return $this->redirect("funcionario/detalhe?id=" . $funcionario);
     }
 }

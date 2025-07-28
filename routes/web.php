@@ -14,9 +14,13 @@ return [
     '/auth/logout' => [UsuarioController::class, 'logout'],
     '/auth/cadastrar' => [UsuarioController::class, 'cadastrar'],
     '/dashboard' => [HomeController::class, 'dashboard'],
+    
     '/funcionario' => [FuncionarioController::class, 'index'],
     '/funcionario/cadastro' => [FuncionarioController::class, 'cadastro'],
     '/funcionario/cadastrar' => [FuncionarioController::class, 'cadastrar'],
+    '/funcionario/detalhe' => [FuncionarioController::class, 'detalhe'],
+    '/funcionario/atualizarServico' => [FuncionarioController::class, 'atualizaServico'],
+    
     '/servico' => [ServicoController::class, 'index'],
     '/servico/cadastro' => [ServicoController::class, 'cadastro'],
     '/servico/cadastrar' => [ServicoController::class, 'cadastrar'],
