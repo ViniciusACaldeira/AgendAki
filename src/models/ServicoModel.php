@@ -42,7 +42,7 @@ class ServicoModel extends Model{
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function addFuncionarioServico( $id, $servicos )
+    public function addFuncionarioServico( $id, $servicos, $duracao )
     {
         $parametros = "";
         $parametros_valores = [];
@@ -50,18 +50,16 @@ class ServicoModel extends Model{
         for( $i = 0; $i < count($servicos);$i++ )
         {
             if( $i == 0 )
-                $parametros .= " VALUES (?, ?)";
+                $parametros .= " VALUES (?, ?, ?)";
             else
-                $parametros .= ", (?, ?)";
-        }
+                $parametros .= ", (?, ?, ?)";
 
-        foreach( $servicos as $servico )
-        {
-            array_push($parametros_valores, $servico);
+            array_push($parametros_valores, $servicos[$i]);
             array_push($parametros_valores, $id);
+            array_push($parametros_valores, $duracao[$i]);
         }
 
-        $stmt = $this->db->prepare("INSERT INTO funcionario_servico (servico_id, funcionario_id) $parametros");
+        $stmt = $this->db->prepare("INSERT INTO funcionario_servico (servico_id, funcionario_id, duracao) $parametros");
         $sucesso = $stmt->execute($parametros_valores);
 
         return $sucesso;
@@ -69,7 +67,7 @@ class ServicoModel extends Model{
 
     public function getByFuncionario( $id )
     {
-        $stmt = $this->db->prepare( "SELECT s.* FROM servico s
+        $stmt = $this->db->prepare( "SELECT s.*, fs.duracao FROM servico s
                                     INNER JOIN funcionario_servico fs ON fs.servico_id = s.id
                                     WHERE fs.funcionario_id = ? ");
 
@@ -110,20 +108,16 @@ class ServicoModel extends Model{
         return count(array_diff($servico, $servicos)) == 0;
     }
 
-    public function atualizaServicoFuncionario( $funcionario, $servicos )
+    public function atualizaServicoFuncionario( $funcionario, $servicos, $duracao )
     {
         $servicosFuncionario = array_column($this->getByFuncionario($funcionario), 'id');
-
-        $remover = array_diff($servicosFuncionario, $servicos);
-        $adicionar = array_diff($servicos, $servicosFuncionario);
-        
         $sucesso = true;
 
-        if( !empty($adicionar) )
-            $sucesso = $this->addFuncionarioServico( $funcionario, $adicionar );
-        
-        if( $sucesso && !empty($remover) )
-            $sucesso = $this->removerServicoFuncionario( $funcionario, $remover );
+        if( !empty($servicosFuncionario) )
+            $sucesso = $this->removerServicoFuncionario( $funcionario, $servicosFuncionario );
+
+        if( $sucesso )
+            $sucesso = $this->addFuncionarioServico( $funcionario, $servicos, $duracao );
 
         return $sucesso;
     }

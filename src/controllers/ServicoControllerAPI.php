@@ -36,6 +36,7 @@ class ServicoControllerAPI extends Controller
         {
             $funcionario_id = $_POST['funcionario_id'] ?? null;
             $servicos = $_POST['servico'] ?? null;
+            $duracao = $_POST['duracao'] ?? null;
 
             $validacao = "";
 
@@ -67,11 +68,29 @@ class ServicoControllerAPI extends Controller
                 }
             }
 
+            if( !isset($duracao) )
+                $validacao .= "Duração obrigatório.\n";
+            else
+            {
+                $duracao = json_decode($duracao);
+
+                if( !is_array($duracao) )
+                    $validacao .= "Duração precisa ser um array.";
+                else if( is_array($servicos) && count($duracao) != count($servicos) )
+                    $validacao .= "Duração tem que ser do mesmo tamanho de Servicos\n";
+                else
+                {
+                    foreach( $duracao as $d )
+                        if( !empty($d) && !$this->validaHora($d) )
+                            $validacao .= "A hora $d não é uma hora valida.\n";
+                }
+            }
+
             if( $validacao != "" )
                 return $this->response(400, $validacao);
         
             $servicoModel = new ServicoModel( );
-            $sucesso = $servicoModel->addFuncionarioServico( $funcionario_id, $servicos );
+            $sucesso = $servicoModel->addFuncionarioServico( $funcionario_id, $servicos, $duracao );
 
             if( $sucesso )
                 return $this->response( 200, "Serviços vínculado ao funcionário.");
@@ -80,6 +99,11 @@ class ServicoControllerAPI extends Controller
         }
         else
             return $this->response( 404, "Não encontrado.");
+    }
+
+    function validaHora($hora) 
+    {
+        return preg_match('/^([01][0-9]|2[0-3]):[0-5][0-9]$/', $hora) === 1;
     }
 
     public function getServicos( )

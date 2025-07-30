@@ -13,11 +13,18 @@
 
     $servicos = $servicoModel->getAll();
     $servicosFuncionario = $servicoModel->getByFuncionario( $id );
-    $idsFuncionario = array_column($servicosFuncionario, 'id');
+    $mapaServicosFuncionario = [];
+    foreach ($servicosFuncionario as $sf)
+        $mapaServicosFuncionario[$sf['id']] = $sf;
 
-    foreach( $servicos as $index => $servico )
-        if( in_array($servico['id'], $idsFuncionario) )
+    // Marca os serviços existentes e adiciona duração
+    foreach ($servicos as $index => $servico) {
+        $idServico = $servico['id'];
+        if (isset($mapaServicosFuncionario[$idServico])) {
             $servicos[$index]['checked'] = true;
+            $servicos[$index]['duracao'] = $mapaServicosFuncionario[$idServico]['duracao'];
+        }
+    }
 ?>
 
 <a href="/funcionario">Voltar</a>
@@ -37,8 +44,11 @@
             $checked = !empty($servico['checked']) ? 'checked' : '';
         ?>
         <div>
-            <input type="checkbox" name="servicos[]" id="<?= $nome ?>" value="<?= $servico['id'] ?>" <?= $checked ?>>
-            <label for="<?= $nome ?>"><?= $nome ?></label>
+            <input type="checkbox" name="servicos[]" id="<?= $servico['id'] ?>" value="<?= $servico['id'] ?>" <?= $checked ?>>
+            <label for="<?= $servico['id'] ?>"><?= $nome ?></label>
+            
+            <label for="servicos_duracao_<?= $servico['id'] ?>">Duração</label>
+            <input type="time" name="servicos_duracao[]" id="servicos_duracao_<?= $servico['id'] ?>" value="<?= $servico['duracao'] ?>">
         </div>
     <?php endforeach; ?>
 

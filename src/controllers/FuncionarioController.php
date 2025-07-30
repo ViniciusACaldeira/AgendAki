@@ -43,8 +43,9 @@ class FuncionarioController extends Controller{
 
         $servicos = $_POST['servicos'] ?? [];
         $funcionario = $_POST['funcionario_id'];
+        $duracao = $_POST['servicos_duracao'];
 
-        if( $servicoModel->atualizaServicoFuncionario( $funcionario, $servicos ) )
+        if( $servicoModel->atualizaServicoFuncionario( $funcionario, $servicos, $duracao ) )
             Flash::set("sucesso", "Serviços atualizados com sucesso.");
         else
             Flash::set("erro", "Falha ao atualizar os serviços.");

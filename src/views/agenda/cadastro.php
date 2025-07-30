@@ -69,13 +69,51 @@
             checkbox.name = 'servico[]';
             checkbox.value = servico['id'];
             checkbox.id = 'servico_' + servico['id'];
+            checkbox.addEventListener('change', () => ajustaInputs(servico['id']));
 
             label.htmlFor = checkbox.id;
             label.appendChild(checkbox);
             label.appendChild(document.createTextNode(' ' + servico['nome']));
             section.appendChild(label);
+
+            const label_inicio = document.createElement('label');
+            const inicio_input = document.createElement('input');
+            inicio_input.type = 'time';
+            inicio_input.name = 'servico_inicio[]';
+            inicio_input.id = 'servico_inicio_' + servico['id'];
+            inicio_input.disabled = true;
+
+            label_inicio.htmlFor = inicio_input.id;
+            label_inicio.appendChild(document.createTextNode("Ínicio: "));
+            label_inicio.appendChild(inicio_input);
+            section.appendChild(label_inicio);
+
+            const label_fim = document.createElement('label');
+            const fim_input = document.createElement('input');
+            fim_input.type = 'time';
+            fim_input.name = 'servico_fim[]';
+            fim_input.id = 'servico_fim_' + servico['id'];
+            fim_input.disabled = true;
+
+            label_fim.htmlFor = fim_input.id;
+            label_fim.appendChild(document.createTextNode("Fim: "));
+            label_fim.appendChild(fim_input);
+            section.appendChild(label_fim);
+            
             section.appendChild(document.createElement('br'));
         });
-        
     }
+    
+    function ajustaInputs( id )
+    {
+        const checkbox = document.getElementById('servico_' + id);
+        const inicio = document.getElementById('servico_inicio_' + id);
+        const fim = document.getElementById('servico_fim_' + id);
+
+        const ativo = checkbox.checked;
+
+        inicio.disabled = !ativo;
+        fim.disabled = !ativo;
+    }
+
 </script>

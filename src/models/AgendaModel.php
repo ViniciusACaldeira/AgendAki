@@ -13,12 +13,20 @@ class AgendaModel extends Model{
         $fim = $_POST['fim_agenda'];
         $funcionario_id = $_POST['funcionario_id_agenda'];
         $servico = $_POST['servico'];
+        $servico_inicio = $_POST['servico_inicio'];
+        $servico_fim = $_POST['servico_fim'];
 
         if( !$data || !$inicio || !$fim || !$funcionario_id || !$servico )
             return ["erro" => "Todos os campos são obrigatórios."];
 
         if( $fim <= $inicio )
             return ["erro" => "O Fim não pode ser inferior ou igual ao início."];
+
+        if( count($servico) != count($servico_inicio) )
+            return ['erro' => "Quantidade de servico_inicio diferente de serviços."];
+
+        if( count($servico) != count($servico_fim))
+            return ['erro' => "Quantidade de servico_fim diferente de serviços."];
 
         $funcionario_model = new FuncionarioModel( );
         $funcionario = $funcionario_model->getById( $funcionario_id );
@@ -47,18 +55,17 @@ class AgendaModel extends Model{
             for( $i = 0; $i < count($servico); $i++ )
             {
                 if( $i == 0 )
-                    $parametros .= " VALUES (?, ?)";
+                    $parametros .= " VALUES (?, ?, ?, ?)";
                 else
-                    $parametros .= ", (?, ?)";
-            }
+                    $parametros .= ", (?, ?, ?, ?)";
 
-            foreach( $servico as $s )
-            {   
                 array_push($parametros_valores, $id);
-                array_push($parametros_valores, $s);
+                array_push($parametros_valores, $servico[$i]);
+                array_push($parametros_valores, empty( $servico_inicio[$i] ) ? $inicio : $servico_inicio[$i] );
+                array_push($parametros_valores, empty( $servico_fim[$i] ) ? $fim : $servico_fim[$i]);
             }
 
-            $stmt = $this->db->prepare( "INSERT INTO agenda_servico (agenda_id, servico_id) $parametros");
+            $stmt = $this->db->prepare( "INSERT INTO agenda_servico (agenda_id, servico_id, inicio, fim) $parametros");
             $retorno = $stmt->execute($parametros_valores);
 
             if( $retorno )
@@ -119,5 +126,28 @@ class AgendaModel extends Model{
         $agendas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $agendas;
+    }
+
+    public function getApartirDe( $data )
+    {
+        $stmt = $this->db->prepare( "SELECT a.id, u.nome, a.data, a.inicio, a.fim 
+                                     FROM agenda a
+                                     INNER JOIN funcionario f ON f.id = a.funcionario_id
+                                     INNER JOIN usuario u ON u.id = f.usuario_id
+                                     WHERE a.data >= ?" );
+        $stmt->execute( [$data] );
+
+        return $stmt->fetchAll( PDO::FETCH_ASSOC );
+    }
+
+    public function getServicos( $agenda_id )
+    {
+        $stmt = $this->db->prepare("SELECT sa.id 'agenda_servico_id', s.*
+                                    FROM agenda_servico sa
+                                    INNER JOIN servico s ON sa.servico_id = s.id
+                                    WHERE sa.agenda_id = ?");
+        $stmt->execute([$agenda_id]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

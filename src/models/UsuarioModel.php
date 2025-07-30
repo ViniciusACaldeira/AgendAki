@@ -13,6 +13,15 @@ class UsuarioModel extends Model{
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getAllCliente( )
+    {
+        $stmt = $this->db->query("SELECT u.id, u.nome, u.telefone, u.email 
+                                    FROM usuario u
+                                    LEFT JOIN funcionario f ON f.usuario_id = u.id
+                                    WHERE f.id IS NULL");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function login()
     {
         $login = $_POST['login'] ?? null;
@@ -80,9 +89,14 @@ class UsuarioModel extends Model{
             return ['erro' => 'Erro ao cadastrar usuário.'];
     }
 
-    public function existeUsuario($email, $telefone) {
-        $stmt = $this->db->prepare("SELECT 1 FROM usuario WHERE telefone = ? OR email = ? LIMIT 1");
-        $stmt->execute([$telefone, $email]);
+    public function existeUsuario($email, $telefone, $id = -1) {
+        $stmt = $this->db->prepare("SELECT 1 FROM usuario WHERE telefone = ? OR email = ? OR id = ? LIMIT 1");
+        $stmt->execute([$telefone, $email, $id]);
         return $stmt->fetchColumn() !== false;
+    }
+
+    public function existeUsuarioByID( $id )
+    {
+        return $this->existeUsuario('','',$id);
     }
 }

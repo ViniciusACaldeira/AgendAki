@@ -25,6 +25,12 @@
                 <li><a href="/agenda/cadastro">Cadastrar Agenda</a></li>
             </ul>
         </li>
+        <li>
+            <a href="/agendamento">Agendamento</a>
+            <ul>
+                <li><a href="/agendamento/cadastro">Cadastrar Agendamento</a></li>
+            </ul>
+        </li>
     </ul>
 </nav>
 
