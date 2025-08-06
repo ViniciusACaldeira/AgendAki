@@ -136,4 +136,59 @@ class ServicoControllerAPI extends Controller
         
         return $this->response( 200, $servicos );
     }
+
+    public function getPreco( )
+    {
+        if( $this->isGET( ) )
+        {
+            $data = $this->getCampo( "data" );
+            $servico = $this->getCampo( "servico_id" );
+            $inicio = $this->getCampo( "inicio", "00:00" );
+            $fim = $this->getCampo( "fim", "23:59" );
+
+            $servicoModel = new ServicoModel( );
+            $retorno = $servicoModel->getPreco($servico, $data, $inicio, $fim );
+
+            return $this->response( $retorno->getStatusHTTP(), $retorno->getMensagem() );
+        }
+        else
+            return $this->response( 400, "Não encontrado.");
+    }
+
+    public function cadastrarPreco( )
+    {
+        if( $this->isPOST() )
+        {
+            $data = $this->getCampo( "data" );
+            $servico = $this->getCampo( "servico_id" );
+            $preco = $this->getCampo("preco", 0.0);
+            $inicio = $this->getCampo( "inicio", "00:00" );
+            $fim = $this->getCampo( "fim", "23:59" );
+
+            $servicoModel = new ServicoModel( );
+            $retorno = $servicoModel->cadastrarPreco($servico, $data, $preco, $inicio, $fim );
+
+            return $this->response( $retorno->getStatusHTTP(), $retorno->getMensagem() );
+        }
+        else
+            return $this->response( 400, "Não encontrado.");
+    }
+
+    public function editarPreco( )
+    {
+        if( $this->isPOST( ) )
+        {
+            $id = $this->getCampo( "id" );
+            $preco = $this->getCampo( "preco", 0.0 );
+            $inicio = $this->getCampo( "inicio", "00:00" );
+            $fim = $this->getCampo( "fim", "23:59" );
+
+            $servicoModel = new ServicoModel( );
+            $retorno = $servicoModel->editarPreco( $id, $preco, $inicio, $fim );
+
+            return $this->responseRetorno( $retorno );
+        }
+        else
+            return $this->response( 400, "Não encontrado." );
+    }
 }

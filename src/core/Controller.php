@@ -63,4 +63,9 @@ class Controller{
                 return null;
         }
     }
+
+    public function responseRetorno( Retorno $retorno )
+    {
+        return $this->response( $retorno->getStatusHTTP(), $retorno->getMensagem());
+    }
 }

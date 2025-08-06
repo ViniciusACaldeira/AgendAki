@@ -67,27 +67,29 @@ class ServicoModel extends Model{
             return new Retorno( Retorno::ERRO, ["Falha ao cadastrar o serviço."] );
     }
 
-    public function cadastrarPreco( $id, $data = null , $preco = 0.0, $preco_inicio = "00:00", $preco_fim = "23:59" )
+    public function cadastrarPreco( $id, $data = null , $preco = 0.0, $inicio = "00:00", $fim = "23:59" )
     {
         if( !isset( $data ) )
             $data = date( "Y-m-d" );
 
         $validacao = new ValidacaoHelper( );
         $validacao->vazio("- ID inválido", $id );
-        $validacao->data("- Data inválida", $data );
 
-        $precos = $this->getPreco( $id, $data, $preco_inicio, $preco_fim );
+        if( !$validacao->temErro( ) )
+        {
+            $precos = $this->getPreco( $id, $data, $inicio, $fim );
 
-        if( !$precos->is(Retorno::SUCESSO))
-            $validacao->addErro($precos->getMensagem());
-        else
-            $validacao->naoVazio( "- Já existe preço cadastrado para essa data e horário.", $precos->getMensagem( ) );
-
+            if( !$precos->is(Retorno::SUCESSO))
+                $validacao->addErro($precos->getMensagem());
+            else
+                $validacao->naoVazio( "- Já existe preço cadastrado para essa data e horário.", $precos->getMensagem( ) );
+        }
+        
         if( $validacao->temErro( ) )
             return new Retorno( Retorno::ERRO_VALIDACAO, $validacao->getValidacao( ) );
 
-        $stmt = $this->db->prepare( "INSERT INTO historico_servico_valor (data, servico_id, valor) VALUES (?,?,?)");
-        $retorno = $stmt->execute( [$data, $id, $preco] );
+        $stmt = $this->db->prepare( "INSERT INTO historico_servico_valor (data, servico_id, valor, inicio, fim) VALUES (?,?,?,?,?)");
+        $retorno = $stmt->execute( [$data, $id, $preco, $inicio, $fim] );
 
         if( $retorno )
             return new Retorno( Retorno::SUCESSO, "Preço cadastrado com sucesso.");
@@ -95,12 +97,18 @@ class ServicoModel extends Model{
             return new Retorno( Retorno::ERRO, "Falha ao cadastrar o preço do serviço.");
     }
 
-    public function getPreco( $id_servico, $data, $inicio, $fim )
+    public function getPreco( $id_servico = null, $data = null, $inicio = null, $fim = null, $id = null )
     {
         $validacao = new ValidacaoHelper( );
 
-        $validacao->validaHorario( "- Formato de inicio inválido.", $inicio );
-        $validacao->validaHorario( "- Formato de fim inválido.", $fim );
+        if( isset( $inicio ) )
+            $validacao->validaHorario( "- Formato de inicio inválido.", $inicio );
+    
+        if( isset( $fim ))
+            $validacao->validaHorario( "- Formato de fim inválido.", $fim );
+
+        if( isset( $data ) )
+            $validacao->data( "- Formato de data inválido.", $data );
 
         if( $validacao->temErro( ) )
             return new Retorno( Retorno::ERRO_VALIDACAO, $validacao->getValidacao() );
@@ -109,6 +117,9 @@ class ServicoModel extends Model{
         $query->setSQL( " SELECT hsv.id, hsv.servico_id, hsv.data, hsv.inicio, hsv.fim, hsv.valor, s.Nome 
                           FROM historico_servico_valor hsv
                           INNER JOIN servico s ON s.id = hsv.servico_id " );
+
+        if( isset( $id ) )
+            $query->addCondicao( "hsv.id = ?", $id );
 
         if( isset($id_servico) )
             $query->addCondicao( "hsv.servico_id = ?", $id_servico );
@@ -247,5 +258,35 @@ class ServicoModel extends Model{
         $retorno = $stmt->execute( $parametros_valores );
 
         return $retorno;
+    }
+
+    public function editarPreco( $id, $preco = 0.0, $inicio = "00:00", $fim = "23:59" )
+    {
+        $validacao = new ValidacaoHelper( );
+        $validacao->vazio( "-ID inválido.", $id );
+
+        if( !empty( $id ) )
+        {
+            $precos = $this->getPreco( null, null, null, null, $id );
+
+            if( !$precos->is(Retorno::SUCESSO))
+                $validacao->addErro( $precos->getMensagem( ) );
+            else
+                $validacao->vazio( "-Preço não encontrado.", $precos->getMensagem( ) );
+        }
+
+        $validacao->validaHorario( "-Formato de início inválido.", $inicio );
+        $validacao->validaHorario( "-Formato de fim inválido.", $fim );
+        
+        if( $validacao->temErro( ) )
+            return new Retorno( Retorno::ERRO_VALIDACAO, $validacao->getValidacao( ) );
+
+        $stmt = $this->db->prepare( "UPDATE historico_servico_valor SET valor = ?, inicio = ?, fim = ? WHERE id = ?" );
+        $retorno = $stmt->execute( [$preco, $inicio, $fim, $id] );
+
+        if( $retorno )
+            return new Retorno( Retorno::SUCESSO, "Preço atualizado com sucesso." );
+        else
+            return new Retorno( Retorno::ERRO, "Falha ao atualizar o preço.");
     }
 }
