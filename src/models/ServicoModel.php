@@ -1,8 +1,12 @@
 <?php
 namespace Vennizlab\Agendaki\models;
 
+use Dotenv\Validator;
 use PDO;
 use Vennizlab\Agendaki\core\Model;
+use Vennizlab\Agendaki\core\Retorno;
+use Vennizlab\Agendaki\helpers\DatabaseHelper;
+use Vennizlab\Agendaki\helpers\ValidacaoHelper;
 
 class ServicoModel extends Model{
 
@@ -24,6 +28,107 @@ class ServicoModel extends Model{
             return ['sucesso' => "Serviço $nome cadastrado com sucesso."];
         else
             return ['erro' => "falha ao cadastrar o serviço $nome."];
+    }
+
+    public function cadastrarV1( $nome, $descricao, $preco, $data, $preco_inicio, $preco_fim )
+    {
+        $validacao = [];
+
+        if( !$nome )
+            array_push( $validacao, "Nome é obrigatório" );
+        else if( $this->getByNome( $nome ) )
+            array_push( $validacao, "Serviço com o nome ( $nome ) já cadastrado." );
+
+        if( !empty($validacao) )
+            return new Retorno( Retorno::ERRO_VALIDACAO, $validacao );
+
+        $stmt = $this->db->prepare( "INSERT INTO servico (nome, descricao) VALUES (?,?)" );
+        $retorno = $stmt->execute( [$nome, $descricao] );
+
+        if( $retorno )
+        {
+            $id = $this->db->lastInsertId( );
+
+            $retorno = $this->cadastrarPreco( $id, $data, $preco, $preco_inicio, $preco_fim );
+
+            if( $retorno->is( Retorno::SUCESSO ) )
+                return new Retorno( Retorno::SUCESSO, ["Serviço cadastrado com sucesso."]);
+            else
+            {
+                $this->db->prepare( "DELETE FROM servico WHERE id = ?")->execute( [$id]);
+
+                $mensagem = $retorno->getMensagem( );
+                $mensagem[] = "Falha ao cadastrar o preço do serviço.";
+
+                return new Retorno( Retorno::ERRO, $mensagem);
+            }
+        }
+        else
+            return new Retorno( Retorno::ERRO, ["Falha ao cadastrar o serviço."] );
+    }
+
+    public function cadastrarPreco( $id, $data = null , $preco = 0.0, $preco_inicio = "00:00", $preco_fim = "23:59" )
+    {
+        if( !isset( $data ) )
+            $data = date( "Y-m-d" );
+
+        $validacao = new ValidacaoHelper( );
+        $validacao->vazio("- ID inválido", $id );
+        $validacao->data("- Data inválida", $data );
+
+        $precos = $this->getPreco( $id, $data, $preco_inicio, $preco_fim );
+
+        if( !$precos->is(Retorno::SUCESSO))
+            $validacao->addErro($precos->getMensagem());
+        else
+            $validacao->naoVazio( "- Já existe preço cadastrado para essa data e horário.", $precos->getMensagem( ) );
+
+        if( $validacao->temErro( ) )
+            return new Retorno( Retorno::ERRO_VALIDACAO, $validacao->getValidacao( ) );
+
+        $stmt = $this->db->prepare( "INSERT INTO historico_servico_valor (data, servico_id, valor) VALUES (?,?,?)");
+        $retorno = $stmt->execute( [$data, $id, $preco] );
+
+        if( $retorno )
+            return new Retorno( Retorno::SUCESSO, "Preço cadastrado com sucesso.");
+        else
+            return new Retorno( Retorno::ERRO, "Falha ao cadastrar o preço do serviço.");
+    }
+
+    public function getPreco( $id_servico, $data, $inicio, $fim )
+    {
+        $validacao = new ValidacaoHelper( );
+
+        $validacao->validaHorario( "- Formato de inicio inválido.", $inicio );
+        $validacao->validaHorario( "- Formato de fim inválido.", $fim );
+
+        if( $validacao->temErro( ) )
+            return new Retorno( Retorno::ERRO_VALIDACAO, $validacao->getValidacao() );
+
+        $query = new DatabaseHelper( );
+        $query->setSQL( " SELECT hsv.id, hsv.servico_id, hsv.data, hsv.inicio, hsv.fim, hsv.valor, s.Nome 
+                          FROM historico_servico_valor hsv
+                          INNER JOIN servico s ON s.id = hsv.servico_id " );
+
+        if( isset($id_servico) )
+            $query->addCondicao( "hsv.servico_id = ?", $id_servico );
+
+        if( isset($data) )
+            $query->addCondicao( "hsv.data = ?", $data);
+
+        if( isset($inicio) )
+            $query->addCondicao( "hsv.inicio >= ?", $inicio );
+
+        if( isset($fim) )
+            $query->addCondicao( "hsv.fim <= ?", $fim );
+
+        $stmt = $this->db->prepare( $query->getSQL( ) );
+        $retorno = $stmt->execute( $query->getParametros( ) );
+
+        if( $retorno )
+            return new Retorno( Retorno::SUCESSO, $stmt->fetchAll( PDO::FETCH_ASSOC ) );
+        else
+            return new Retorno( Retorno::ERRO, "Falha ao consultar o preço.");
     }
 
     public function getByNome( $nome )

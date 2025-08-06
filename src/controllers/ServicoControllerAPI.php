@@ -7,6 +7,29 @@ use Vennizlab\Agendaki\models\ServicoModel;
 
 class ServicoControllerAPI extends Controller
 {
+    public function cadastrar( )
+    {
+        if( $this->isPOST( ) )
+        {
+            $nome = $this->getCampo("nome");
+            $descricao = $this->getCampo("descricao");
+            $preco = $this->getCampo("preco");
+            $data = $this->getCampo( "data" );
+            $preco_inicio = $this->getCampo( "preco_inicio", "00:00" );
+            $preco_fim = $this->getCampo( "preco_fim", "23:59" );
+
+            if( !$nome )
+                return $this->response(400, "O nome é obrigatório.");
+
+            $servicoModel = new ServicoModel( );
+            $retorno = $servicoModel->cadastrarV1( $nome, $descricao, $preco, $data, $preco_inicio, $preco_fim );
+
+            return $this->response( $retorno->getStatusHTTP( ), $retorno->getMensagem( ) );            
+        }
+        else
+            return $this->response( 404, "Não encontrado." );
+    }
+
     public function servicoByFuncionario( )
     {
         if( $_SERVER['REQUEST_METHOD'] == "GET" )

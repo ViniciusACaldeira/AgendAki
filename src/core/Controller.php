@@ -28,4 +28,39 @@ class Controller{
         ]);
         exit;
     }
+
+    private string $tipo = "";
+
+    public function isPOST( )
+    {
+        return $_SERVER['REQUEST_METHOD'] == "POST";
+    }
+
+    public function isGET( )
+    {
+        return $_SERVER['REQUEST_METHOD'] == "GET";
+    }
+
+    public function getTipo( )
+    {
+        if( $this->tipo == "" )
+            $this->tipo = $_SERVER['REQUEST_METHOD'];
+
+        return $this->tipo;
+    }
+
+    public function getCampo( string $campo, $default = null )
+    {
+        switch( $this->getTipo( ) )
+        {
+            case "GET":
+                return $_GET[$campo] ?? $default;
+                break;
+            case "POST":
+                return $_POST[$campo] ?? $default;
+                break;
+            default:
+                return null;
+        }
+    }
 }

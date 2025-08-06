@@ -44,4 +44,5 @@ return [
     '/api/servico/funcionario' => [ServicoControllerAPI::class, 'servicoByFuncionario'],
     '/api/servico/funcionario/cadastrar' => [ServicoControllerAPI::class, 'cadastrarServicoFuncionario'],
     '/api/servico' => [ServicoControllerAPI::class, "getServicos"],
+    '/api/servico/cadastrar' => [ServicoControllerAPI::class, "cadastrar"],
 ];
