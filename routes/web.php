@@ -40,8 +40,8 @@ return [
 
     '/api/agenda/servico' => [AgendaControllerAPI::class, 'getServicos'],
     '/api/agendamento/servico/disponivel' => [AgendamentoControllerAPI::class, 'servicosDisponiveis'],
+    '/api/agendamento' => [AgendamentoControllerAPI::class, 'listar'],
     '/api/servico/funcionario' => [ServicoControllerAPI::class, 'servicoByFuncionario'],
     '/api/servico/funcionario/cadastrar' => [ServicoControllerAPI::class, 'cadastrarServicoFuncionario'],
     '/api/servico' => [ServicoControllerAPI::class, "getServicos"],
-    
 ];

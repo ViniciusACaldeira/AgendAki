@@ -1,7 +1,7 @@
 <?php
     use Vennizlab\Agendaki\helpers\Flash;
     use Vennizlab\Agendaki\models\AgendaModel;
-use Vennizlab\Agendaki\models\FuncionarioModel;
+    use Vennizlab\Agendaki\models\FuncionarioModel;
 
     Flash::print( ); 
 ?>

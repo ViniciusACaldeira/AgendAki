@@ -44,15 +44,22 @@
             $checked = !empty($servico['checked']) ? 'checked' : '';
         ?>
         <div>
-            <input type="checkbox" name="servicos[]" id="<?= $servico['id'] ?>" value="<?= $servico['id'] ?>" <?= $checked ?>>
+            <input type="checkbox" name="servicos[]" id="servicos_<?= $servico['id'] ?>" value="<?= $servico['id'] ?>" <?= $checked ?> onchange="ajustaDuracao(this)">
             <label for="<?= $servico['id'] ?>"><?= $nome ?></label>
             
             <label for="servicos_duracao_<?= $servico['id'] ?>">Duração</label>
-            <input type="time" name="servicos_duracao[]" id="servicos_duracao_<?= $servico['id'] ?>" value="<?= $servico['duracao'] ?>">
+            <input type="time" name="servicos_duracao[]" id="servicos_duracao_<?= $servico['id'] ?>" value="<?= $servico['duracao'] ?? "00:00"?>" <?= $checked ? "" : "disabled" ?>>
         </div>
     <?php endforeach; ?>
 
     <button type="submit">Salvar</button>
 </form>
 
-
+<script>
+    function ajustaDuracao( event )
+    {
+        const id = event.value;
+        const duracao = document.getElementById( "servicos_duracao_" + id );
+        duracao.disabled = !event.checked;
+    }
+</script>

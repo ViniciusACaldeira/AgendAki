@@ -74,6 +74,62 @@ class AgendamentoModel extends Model
                         $inicio, $fim, $inicio, $fim]);
 
         return $stmt->fetchColumn() !== false;
-    } 
+    }
+
+    public function getAgendamentos( $data, $funcionarios, $servicos, $usuarios )
+    {
+        $where = [];
+        $parametros_valores = [];
+
+        if( $data )
+        {
+            array_push($where, "ag.data = ?");
+            array_push($parametros_valores, $data);
+        }
+
+        if( $funcionarios )
+        {
+            $parametros = $this->getParametros( $funcionarios );
+            array_push($where, "ag.funcionario_id IN ( $parametros )");
+
+            $parametros_valores = array_merge($parametros_valores, $funcionarios);
+        }
+
+        if( $servicos )
+        {
+            $parametros = $this->getParametros( $servicos );
+            array_push($where, "sa.servico_id IN ( $parametros )");
+
+            $parametros_valores = array_merge($parametros_valores, $servicos);
+        }
+
+        if( $usuarios )
+        {
+            $parametros = $this->getParametros( $usuarios );
+            array_push($where, "a.usuario_id IN ( $parametros )");
+
+            $parametros_valores = array_merge($parametros_valores, $usuarios);
+        }
+
+        $sql = "SELECT uf.Nome 'Nome_Funcionario', u.Nome 'Nome', u.Telefone 'Telefone', ag.data 'Data', a.inicio 'Inicio_Agendamento', a.fim 'Fim_Agendamento',
+                s.nome 'Nome_Servico'
+                FROM agendamento a
+                INNER JOIN agenda_servico sa ON sa.id = a.agenda_servico_id
+                INNER JOIN agenda ag ON ag.id = sa.agenda_id
+                INNER JOIN servico s ON s.id = sa.servico_id
+                INNER JOIN usuario u ON u.id = a.usuario_id
+                INNER JOIN funcionario f ON f.id = ag.funcionario_id
+                INNER JOIN usuario uf ON uf.id = f.usuario_id";
+
+        for( $i = 0; $i < count($where); $i++)
+            $sql .= ( $i == 0 ? " WHERE " : " AND " ) . $where[$i];
+
+        $sql .= " ORDER BY ag.data, a.inicio, a.fim";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($parametros_valores);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
 }

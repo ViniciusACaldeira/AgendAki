@@ -20,15 +20,18 @@ class AgendamentoControllerAPI extends Controller
             $agendamentoModel = new AgendamentoModel( );
             $agenda_servico = $agendamentoModel->getByID( $id );
 
-            $agendamentos = $agendamentoModel->getByAgenda( $agenda_servico['agenda_id'] );
+            if( !$agenda_servico )
+                return $this->response( 200, '- Agenda de serviço não encontrada.');
 
+            $agendamentos = $agendamentoModel->getByAgenda( $agenda_servico['agenda_id'] );
+            
             $inicio = $agenda_servico['inicio'];
             $fim = $agenda_servico['fim'];
             $duracao = $agenda_servico['duracao'];
 
             $inicio = new DateTime($agenda_servico['inicio']);   // "13:00"
             $fim = new DateTime($agenda_servico['fim']);         // "19:00"
-            $duracao = $agenda_servico['duracao'];               // "00:50:00"
+            $duracao = $agenda_servico['duracao'] ?? "00:00:00";               // "00:50:00"
 
             $duracaoInterval = new DateInterval('PT' . (new DateTime($duracao))->format('H') . 'H' . (new DateTime($duracao))->format('i') . 'M');
             $duracaoSegundos = ($duracaoInterval->h * 3600) + ($duracaoInterval->i * 60) + $duracaoInterval->s;
@@ -85,5 +88,23 @@ class AgendamentoControllerAPI extends Controller
             return $this->response( 400, 'Método não encontrado.');
     }
 
+    public function listar( )
+    {
+        if( $_SERVER['REQUEST_METHOD'] == "POST" )
+        {
+            $data = $_POST['data'] ?? null;
+            $funcionarios = $_POST['funcionarios_id'] ?? null;
+            $servicos = $_POST['servicos_id'] ?? null;
+            $usuarios = $_POST['usuarios_id'] ?? null;
 
+            if( !$data && !$funcionarios && !$servicos && !$usuarios )
+                return $this->response( 200, ' - Pelo menos um parâmetro obrigatório.' );
+
+            $agendamentoModel = new AgendamentoModel( );
+            $agendamentos = $agendamentoModel->getAgendamentos( $data, $funcionarios, $servicos, $usuarios );
+            return $this->response( 200, $agendamentos);
+        }
+        else
+            return $this->response( 400, 'Método não encontrado.');
+    }
 }

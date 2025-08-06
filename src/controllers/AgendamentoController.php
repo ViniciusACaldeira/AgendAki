@@ -6,11 +6,23 @@ use DateTime;
 use Vennizlab\Agendaki\core\Controller;
 use Vennizlab\Agendaki\helpers\Flash;
 use Vennizlab\Agendaki\models\AgendamentoModel;
+use Vennizlab\Agendaki\models\AgendaModel;
+use Vennizlab\Agendaki\models\FuncionarioModel;
+use Vennizlab\Agendaki\models\ServicoModel;
+use Vennizlab\Agendaki\models\UsuarioModel;
 
 class AgendamentoController extends Controller{
     public function index( )
     {
-        $this->view("agendamento/index");
+        $funcionarioModel = new FuncionarioModel( );
+        $usuarioModel = new UsuarioModel( );
+        $servicosModel = new ServicoModel( );
+
+        $clientes = $usuarioModel->getAllCliente( );
+        $funcionarios = $funcionarioModel->getAll( );
+        $servicos = $servicosModel->getAll( );
+
+        $this->view("agendamento/index", ["funcionarios" => $funcionarios, "servicos" => $servicos, "clientes" => $clientes]);
     }
 
     public function cadastro( )
