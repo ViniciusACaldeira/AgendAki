@@ -5,10 +5,12 @@ use Vennizlab\Agendaki\controllers\AgendaControllerAPI;
 use Vennizlab\Agendaki\controllers\AgendamentoController;
 use Vennizlab\Agendaki\controllers\AgendamentoControllerAPI;
 use Vennizlab\Agendaki\controllers\FuncionarioController;
+use Vennizlab\Agendaki\controllers\FuncionarioControllerAPI;
 use Vennizlab\Agendaki\controllers\HomeController;
 use Vennizlab\Agendaki\controllers\UsuarioController;
 use Vennizlab\Agendaki\controllers\ServicoController;
 use Vennizlab\Agendaki\controllers\ServicoControllerAPI;
+use Vennizlab\Agendaki\controllers\UsuarioControllerAPI;
 
 // Lista de rotas: 'url' => [Classe, 'método']
 return [
@@ -38,9 +40,12 @@ return [
     '/agendamento/cadastrar' => [AgendamentoController::class, 'cadastrar'],
     // Adicione outras rotas aqui
 
+    '/api/agenda' => [AgendaControllerAPI::class, "listar"],
     '/api/agenda/servico' => [AgendaControllerAPI::class, 'getServicos'],
     '/api/agendamento/servico/disponivel' => [AgendamentoControllerAPI::class, 'servicosDisponiveis'],
     '/api/agendamento' => [AgendamentoControllerAPI::class, 'listar'],
+    '/api/agendamento/cadastrar' => [AgendamentoControllerAPI::class, 'cadastrar'],
+
     '/api/servico/funcionario' => [ServicoControllerAPI::class, 'servicoByFuncionario'],
     '/api/servico/funcionario/cadastrar' => [ServicoControllerAPI::class, 'cadastrarServicoFuncionario'],
     '/api/servico' => [ServicoControllerAPI::class, "getServicos"],
@@ -48,4 +53,8 @@ return [
     '/api/servico/preco' => [ServicoControllerAPI::class, "getPreco"],
     '/api/servico/preco/cadastrar' => [ServicoControllerAPI::class, "cadastrarPreco"],
     '/api/servico/preco/editar' => [ServicoControllerAPI::class, 'editarPreco'],
+
+    '/api/funcionario' => [FuncionarioControllerAPI::class, 'listar'],
+
+    '/api/usuario/cliente' => [UsuarioControllerAPI::class, 'listarClientes'],
 ];

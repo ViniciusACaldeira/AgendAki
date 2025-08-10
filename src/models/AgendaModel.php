@@ -1,8 +1,12 @@
 <?php
 namespace Vennizlab\Agendaki\models;
 
+use Exception;
 use PDO;
 use Vennizlab\Agendaki\core\Model;
+use Vennizlab\Agendaki\core\Retorno;
+use Vennizlab\Agendaki\helpers\DatabaseHelper;
+use Vennizlab\Agendaki\helpers\ValidacaoHelper;
 
 class AgendaModel extends Model{
 
@@ -149,5 +153,43 @@ class AgendaModel extends Model{
         $stmt->execute([$agenda_id]);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function listar( $data, $funcionario )
+    {
+        $query = new DatabaseHelper( );
+        $query->setSQL( "SELECT a.id, u.nome, a.data, a.inicio, a.fim 
+                         FROM agenda a
+                         INNER JOIN funcionario f ON f.id = a.funcionario_id
+                         INNER JOIN usuario u ON u.id = f.usuario_id" );
+
+        $validacao = new ValidacaoHelper( );
+
+        if( isset( $data ))
+            $validacao->data( "-Formato de data inválida.", $data );
+
+        if( $validacao->temErro( ) )
+            return new Retorno( Retorno::ERRO_VALIDACAO, $validacao->getValidacao( ) );
+
+        if( isset( $data ) )
+            $query->addCondicao( "a.data = ?", $data );
+
+        if( isset($funcionario) )
+        {
+            $parametros = $this->getParametros( $funcionario );
+            $query->addCondicao( "f.id IN ($parametros)", $funcionario );
+        }
+
+        try
+        {
+            $stmt = $this->db->prepare( $query->getSQL( ) );
+            $stmt->execute( $query->getParametros( ) );
+
+            return new Retorno( Retorno::SUCESSO, $stmt->fetchAll(PDO::FETCH_ASSOC) );
+        }
+        catch( Exception $e )
+        {
+            return new Retorno( Retorno::ERRO, "Falha ao listar agenda: " . $e->getMessage( ) );
+        }
     }
 }

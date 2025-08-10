@@ -23,7 +23,12 @@ class ValidacaoHelper{
     public function vazio( $mensagem, $obj )
     {
         if( empty($obj) )
+        {
             $this->addErro( $mensagem );
+            return true;
+        }
+
+        return false;
     }
 
     public function data( $mensagem, $data )

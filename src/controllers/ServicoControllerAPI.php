@@ -157,7 +157,7 @@ class ServicoControllerAPI extends Controller
 
     public function cadastrarPreco( )
     {
-        if( $this->isPOST() )
+        if( $this->isPOST( ) )
         {
             $data = $this->getCampo( "data" );
             $servico = $this->getCampo( "servico_id" );

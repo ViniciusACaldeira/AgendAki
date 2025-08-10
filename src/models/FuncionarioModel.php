@@ -4,6 +4,8 @@ namespace Vennizlab\Agendaki\models;
 
 use PDO;
 use Vennizlab\Agendaki\core\Model;
+use Vennizlab\Agendaki\core\Retorno;
+use Vennizlab\Agendaki\helpers\DatabaseHelper;
 
 class FuncionarioModel extends Model{
 
@@ -48,4 +50,19 @@ class FuncionarioModel extends Model{
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     
+    public function listar( $id )
+    {
+        $query = new DatabaseHelper( );
+        $query->setSQL( "SELECT f.id, u.nome, u.telefone, u.email 
+                         FROM funcionario f 
+                         INNER JOIN usuario u ON u.id = f.usuario_id" );
+
+        if( !empty( $id ) )
+            $query->addCondicao( "f.id = ?", $id );
+
+        $stmt = $this->db->prepare( $query->getSQL( ) );
+        $stmt->execute( $query->getParametros( ) );
+
+        return new Retorno( Retorno::SUCESSO, $stmt->fetchAll(PDO::FETCH_ASSOC) );
+    }
 }

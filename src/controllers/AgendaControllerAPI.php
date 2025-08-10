@@ -31,4 +31,18 @@ class AgendaControllerAPI extends Controller{
         else
             return $this->response( 400, "Método não encontrado.");
     }
+
+    public function listar( )
+    {
+        if( $this->isGET( ) )
+        {
+            $data = $this->getCampo( "data" );
+            $funcionario = $this->getCampo( "funcionario" );
+
+            $agendaModel = new AgendaModel( );
+            return $this->responseRetorno( $agendaModel->listar( $data, $funcionario ) );
+        }
+        else
+            return $this->response( 400, "Não encontrado.");
+    }
 }

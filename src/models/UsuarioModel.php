@@ -4,6 +4,7 @@ namespace Vennizlab\Agendaki\models;
 
 use PDO;
 use Vennizlab\Agendaki\core\Model;
+use Vennizlab\Agendaki\core\Retorno;
 
 class UsuarioModel extends Model{
 
@@ -98,5 +99,15 @@ class UsuarioModel extends Model{
     public function existeUsuarioByID( $id )
     {
         return $this->existeUsuario('','',$id);
+    }
+
+    public function listarClientes( )
+    {
+        $stmt = $this->db->query("SELECT u.id, u.nome, u.telefone, u.email 
+                                  FROM usuario u
+                                  LEFT JOIN funcionario f ON f.usuario_id = u.id
+                                  WHERE f.id IS NULL");
+
+        return new Retorno( Retorno::SUCESSO, $stmt->fetchAll(PDO::FETCH_ASSOC) ); 
     }
 }
