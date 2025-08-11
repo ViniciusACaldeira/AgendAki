@@ -113,7 +113,7 @@ class ServicoControllerAPI extends Controller
                 return $this->response(400, $validacao);
         
             $servicoModel = new ServicoModel( );
-            $sucesso = $servicoModel->addFuncionarioServico( $funcionario_id, $servicos, $duracao );
+            $sucesso = $servicoModel->atualizaServicoFuncionario( $funcionario_id, $servicos, $duracao );
 
             if( $sucesso )
                 return $this->response( 200, "Serviços vínculado ao funcionário.");
