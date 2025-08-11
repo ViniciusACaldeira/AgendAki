@@ -5,6 +5,7 @@ namespace Vennizlab\Agendaki\models;
 use PDO;
 use Vennizlab\Agendaki\core\Model;
 use Vennizlab\Agendaki\core\Retorno;
+use Vennizlab\Agendaki\helpers\DatabaseHelper;
 
 class UsuarioModel extends Model{
 
@@ -109,5 +110,18 @@ class UsuarioModel extends Model{
                                   WHERE f.id IS NULL");
 
         return new Retorno( Retorno::SUCESSO, $stmt->fetchAll(PDO::FETCH_ASSOC) ); 
+    }
+
+    public function getUsuarioByLogin( $login )
+    {
+        $query = new DatabaseHelper( );
+        $query->setSQL( "SELECT u.id, u.nome, u.senha, f.id 'funcionario_id'
+                         FROM usuario u
+                         LEFT JOIN funcionario f ON f.usuario_id = u.id" );
+        $query->addCondicao( "u.email = ? OR u.telefone = ?", [$login, $login] );
+
+        $retorno = $query->execute( $this->db );
+
+        return new Retorno( Retorno::SUCESSO, $retorno->fetchAll(PDO::FETCH_ASSOC) );
     }
 }

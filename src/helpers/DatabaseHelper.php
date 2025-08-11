@@ -51,4 +51,12 @@ class DatabaseHelper{
 
         return $query;
     }
+
+    public function execute( $db )
+    {
+        $stmt = $db->prepare( $this->getSQL( ) );
+        $stmt->execute( $this->getParametros( ) );
+
+        return $stmt;
+    }
 }

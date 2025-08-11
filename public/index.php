@@ -12,10 +12,25 @@ $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? 'auth/login';
 $url = rtrim($url, '/');
 
 if (array_key_exists($url, $routes)) {
-    [$controllerClass, $method] = $routes[$url];
+    [$controllerClass, $method, $middlewares] = array_pad($routes[$url], 3, []);
+
+    if( !empty($middlewares) )
+    {
+        foreach( $middlewares as $middlewareDef ) 
+        {
+            if( is_array( $middlewareDef ) )
+            {
+                $middlewareClass = array_shift($middlewareDef);
+                $middleware = new $middlewareClass(...$middlewareDef);
+            }
+            else
+                $middleware = new $middlewareDef( );
+
+            $middleware->handle( );
+        }
+    } 
 
     $controller = new $controllerClass();
-
     if (method_exists($controller, $method)) {
         $controller->$method();
     } else {

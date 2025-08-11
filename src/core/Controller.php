@@ -68,4 +68,9 @@ class Controller{
     {
         return $this->response( $retorno->getStatusHTTP(), $retorno->getMensagem());
     }
+
+    public function responseNaoEncontrado( )
+    {
+        return $this->response( 400, "Não encontrado!" );
+    }
 }

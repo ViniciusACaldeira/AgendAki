@@ -14,10 +14,15 @@ class Retorno{
     {
         $this->status = $status;
 
-        if( is_array($mensagem) )
-            foreach( $mensagem as $m )
-                $this->mensagem[] = $m;
-        else
+        if( is_array($mensagem) ) 
+        {
+            if(array_keys($mensagem) !== range(0, count($mensagem) - 1))
+                $this->mensagem = $mensagem;
+            else
+                foreach ($mensagem as $m)
+                    $this->mensagem[] = $m;
+        }
+        else 
             $this->mensagem[] = $mensagem;
     }
 

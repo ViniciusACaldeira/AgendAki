@@ -4,13 +4,18 @@ use Vennizlab\Agendaki\controllers\AgendaController;
 use Vennizlab\Agendaki\controllers\AgendaControllerAPI;
 use Vennizlab\Agendaki\controllers\AgendamentoController;
 use Vennizlab\Agendaki\controllers\AgendamentoControllerAPI;
+use Vennizlab\Agendaki\controllers\AuthControllerAPI;
 use Vennizlab\Agendaki\controllers\FuncionarioController;
 use Vennizlab\Agendaki\controllers\FuncionarioControllerAPI;
 use Vennizlab\Agendaki\controllers\HomeController;
+use Vennizlab\Agendaki\controllers\PermissaoControllerAPI;
 use Vennizlab\Agendaki\controllers\UsuarioController;
 use Vennizlab\Agendaki\controllers\ServicoController;
 use Vennizlab\Agendaki\controllers\ServicoControllerAPI;
 use Vennizlab\Agendaki\controllers\UsuarioControllerAPI;
+use Vennizlab\Agendaki\helpers\Permissoes;
+use Vennizlab\Agendaki\middlewares\AuthMiddleware;
+use Vennizlab\Agendaki\middlewares\PermissaoMiddleware;
 
 // Lista de rotas: 'url' => [Classe, 'método']
 return [
@@ -57,4 +62,10 @@ return [
     '/api/funcionario' => [FuncionarioControllerAPI::class, 'listar'],
 
     '/api/usuario/cliente' => [UsuarioControllerAPI::class, 'listarClientes'],
+
+    '/api/permissoes' => [PermissaoControllerAPI::class, "listar", [AuthMiddleware::class]],
+    '/api/permissoes/vincular' => [PermissaoControllerAPI::class, "vincular", [AuthMiddleware::class]],
+    '/api/permissoes/funcionario' => [PermissaoControllerAPI::class, "listarFuncionario", [AuthMiddleware::class, [PermissaoMiddleware::class, [Permissoes::CONSULTA_FUNCIONARIO]]]],
+
+    '/api/auth/login' => [AuthControllerAPI::class, "login"],
 ];
