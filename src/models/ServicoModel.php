@@ -289,4 +289,21 @@ class ServicoModel extends Model{
         else
             return new Retorno( Retorno::ERRO, "Falha ao atualizar o preço.");
     }
+
+    public function get( $id )
+    {
+        $query = new DatabaseHelper( );
+        $query->setSQL( "SELECT * FROM servico" );
+
+        $parametros = $this->getParametros($id);
+
+        $query->addCondicao( "id IN ($parametros)", $id );
+
+        $retorno = $query->execute( $this->db );
+
+        if( $retorno )
+            return new Retorno( Retorno::SUCESSO, $retorno->fetchAll(PDO::FETCH_ASSOC) );
+        else
+            return new Retorno( Retorno::ERRO, "Falha ao listar os serviços." );
+    }
 }

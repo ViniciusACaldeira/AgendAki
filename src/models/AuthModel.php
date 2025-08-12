@@ -51,7 +51,8 @@ class AuthModel extends Model{
                     "id" => $usuario['id'],
                     "nome" => $usuario['nome'],
                     "permissoes" => $permissao,
-                    "funcionario" => $funcionario
+                    "funcionario" => $funcionario,
+                    'funcionario_id' => $usuario['funcionario_id']
                 ]
             ];
 

@@ -68,4 +68,6 @@ return [
     '/api/permissoes/funcionario' => [PermissaoControllerAPI::class, "listarFuncionario", [AuthMiddleware::class, [PermissaoMiddleware::class, [Permissoes::CONSULTA_FUNCIONARIO]]]],
 
     '/api/auth/login' => [AuthControllerAPI::class, "login"],
+
+    '/api/agenda/cadastrar' => [AgendaControllerAPI::class, "cadastrar", [AuthMiddleware::class]],
 ];

@@ -3,9 +3,13 @@ namespace Vennizlab\Agendaki\models;
 
 use Exception;
 use PDO;
+use Vennizlab\Agendaki\controllers\ServicoControllerAPI;
+use Vennizlab\Agendaki\core\Auth;
 use Vennizlab\Agendaki\core\Model;
 use Vennizlab\Agendaki\core\Retorno;
 use Vennizlab\Agendaki\helpers\DatabaseHelper;
+use Vennizlab\Agendaki\helpers\Permissoes;
+use Vennizlab\Agendaki\helpers\TipoAgenda;
 use Vennizlab\Agendaki\helpers\ValidacaoHelper;
 
 class AgendaModel extends Model{
@@ -190,6 +194,105 @@ class AgendaModel extends Model{
         catch( Exception $e )
         {
             return new Retorno( Retorno::ERRO, "Falha ao listar agenda: " . $e->getMessage( ) );
+        }
+    }
+
+    public function cadastrarV1( $funcionario_id, $data, $inicio, $fim, $servicos, $servicos_inicio, $servicos_fim, $tipo = TipoAgenda::LIVRE )
+    {
+        $validacao = new ValidacaoHelper( );
+
+        $validacao->data( "data obrigatória/inválida.", $data );
+        $validacao->validaHorario( "inicio obrigatório/invalido.", $inicio );
+        $validacao->validaHorario( "fim obrigatório/invalido.", $fim );
+
+        if( $funcionario_id != null )
+            $validacao->permissao( "Usuário sem permissão para abrir agenda para outro além dele.", [Permissoes::CADASTRO_AGENDA] );
+        else
+            $funcionario_id = Auth::usuario( )->funcionario_id;
+
+        if( !$validacao->vazio( "servicos obrigatório.", $servicos ) )
+        {
+            $servicoModel = new ServicoModel( );
+            $servicosBase = $servicoModel->getByFuncionario( $funcionario_id );
+
+            $idBase = array_column( $servicosBase, 'id' );
+
+            $this->getParametros( $servicos );
+
+            if( !empty( array_diff( $servicos, $idBase ) ) )
+                $validacao->addErro( "Existem serviços inválidos." );
+        }
+
+        $qtd = count( $servicos );
+
+        if( !$validacao->vazio( "servicos_inicio obrigatório", $servicos_inicio ) )
+        {
+            $this->getParametros( $servicos_inicio );
+
+            if( $qtd != count($servicos_inicio) )
+                $validacao->addErro( "A quantidade de servicos_inicio, deve ser igual a de servicos." );
+        }
+
+        if( !$validacao->vazio( "servicos_fim obrigatório", $servicos_fim ) )
+        {
+            $this->getParametros( $servicos_fim );
+
+            if( $qtd != count($servicos_fim) )
+                $validacao->addErro( "A quantidade de servicos_fim, deve ser igual a de servicos." );
+        }
+        
+        if( $validacao->temErro( ) )
+            return new Retorno( Retorno::ERRO_VALIDACAO, $validacao->getValidacao( ) );
+
+        try
+        {
+            $this->db->beginTransaction( );
+
+            $query = new DatabaseHelper( );
+            $query->setSQL( "INSERT INTO agenda (funcionario_id, data, inicio, fim, tipo_agenda_id) VALUES (?,?,?,?,?)" );
+            $query->addParametro( [$funcionario_id, $data, $inicio, $fim, $tipo] );
+
+            $retorno = $query->execute( $this->db );
+
+            if( $retorno )
+            {
+                $id = $this->db->lastInsertId( );
+
+                $parametros = "";
+                $parametros_valores = [];
+
+                for( $i = 0; $i < count( $servicos ); $i++ )
+                {
+                    $parametros .= "( ?, ?, ?, ? ),";
+                    $parametros_valores[] = $id;
+                    $parametros_valores[] = $servicos[$i];
+                    $parametros_valores[] = $servicos_inicio[$i];
+                    $parametros_valores[] = $servicos_fim[$i];
+                }
+
+                $parametros = rtrim( $parametros, "," );
+
+                $query = new DatabaseHelper( );
+                $query->setSQL( "INSERT INTO agenda_servico (agenda_id, servico_id, inicio, fim) VALUES $parametros" );
+                $query->addParametro( $parametros_valores );
+
+                $retorno = $query->execute( $this->db );
+
+                if( $retorno )
+                {
+                    $this->db->commit();
+                    return new Retorno( Retorno::SUCESSO, "Agenda cadastrada com sucesso." );
+                }
+                else
+                    $this->db->rollBack();
+            }
+
+            return new Retorno( Retorno::ERRO, "Falha ao cadastrar a agenda." ); 
+        }
+        catch( Exception $e )
+        {
+            $this->db->rollBack();
+            return new Retorno( Retorno::ERRO, "Falha ao cadastrar a agenda: ", $e->getMessage( ) );
         }
     }
 }

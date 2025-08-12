@@ -3,6 +3,7 @@
 namespace Vennizlab\Agendaki\controllers;
 
 use Vennizlab\Agendaki\core\Controller;
+use Vennizlab\Agendaki\helpers\TipoAgenda;
 use Vennizlab\Agendaki\models\AgendaModel;
 
 class AgendaControllerAPI extends Controller{
@@ -44,5 +45,27 @@ class AgendaControllerAPI extends Controller{
         }
         else
             return $this->response( 400, "Não encontrado.");
+    }
+
+    public function cadastrar( )
+    {
+        if( $this->isPOST( ) )
+        {
+            $funcionario = $this->getCampo( "funcionario_id" );
+            $data = $this->getCampo( "data" );
+            $inicio = $this->getCampo( "inicio" );
+            $fim = $this->getCampo( "fim" );
+            $servicos = $this->getCampo( "servicos", [] );
+            $servico_inicio = $this->getCampo( "servico_inicio", [] );
+            $servico_fim = $this->getCampo( "servico_fim", [] );
+            $tipo = $this->getCampo( "tipo", TipoAgenda::LIVRE );
+
+            $agendaModel = new AgendaModel( );
+            $retorno = $agendaModel->cadastrarV1($funcionario, $data, $inicio, $fim, $servicos, $servico_inicio, $servico_fim, $tipo);
+
+            $this->responseRetorno( $retorno );
+        }
+        else
+            return $this->responseNaoEncontrado( );
     }
 }

@@ -3,6 +3,7 @@
 namespace Vennizlab\Agendaki\helpers;
 
 use DateTime;
+use Vennizlab\Agendaki\core\Auth;
 
 class ValidacaoHelper{
 
@@ -62,5 +63,38 @@ class ValidacaoHelper{
     public function temErro( )
     {
         return !empty($this->validacao);
+    }
+
+    public function permissao( $mensagem, array $permissao )
+    {
+        if( !Auth::permissao($permissao) )
+        {
+            $this->addErro( $mensagem );
+            return true;
+        }
+
+        return false;
+    }
+
+    public function existe( $mensagem, array $comparacao, $obj )
+    {
+        if( in_array( $obj, $comparacao ) )
+        {
+            $this->addErro( $mensagem );
+            return true;
+        }
+
+        return false;
+    }
+
+    public function naoExiste( $mensagem, array $comparacao, $obj )
+    {
+        if( !in_array( $obj, $comparacao ) )
+        {
+            $this->addErro( $mensagem );
+            return true;
+        }
+
+        return false;
     }
 }
