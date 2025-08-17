@@ -4,6 +4,7 @@ namespace Vennizlab\Agendaki\helpers;
 
 use DateTime;
 use Vennizlab\Agendaki\core\Auth;
+use Vennizlab\Agendaki\core\Retorno;
 
 class ValidacaoHelper{
 
@@ -96,5 +97,10 @@ class ValidacaoHelper{
         }
 
         return false;
+    }
+
+    public function retorno( )
+    {
+        return new Retorno( Retorno::ERRO_VALIDACAO, ["errors" => $this->getValidacao( ) ] );
     }
 }

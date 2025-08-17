@@ -11,37 +11,47 @@ use Vennizlab\Agendaki\core\Middleware;
 class AuthMiddleware implements Middleware{
     
     private $secret_key;
+    private $tipo;
 
-    public function __construct( )
+    public function __construct( $tipo = "api" )
     {
+        $this->tipo = $tipo;
         $config = require(__DIR__.'/../../config/config.php');
         $this->secret_key = $config['secret_key'];
     }
 
     public function handle( )
     {
-        $headers = getallheaders();
-
-        if( !isset($headers['Authorization']))
+        if(empty($_COOKIE['token']))
         {
-            http_response_code(401);
-            echo json_encode(["mensagem" => "Token não enviado."]);
+            if( $this->tipo == "api")
+            {
+                http_response_code(401);
+                echo json_encode(["mensagem" => "Não autenticado."]);
+            }
+            else
+                header('Location: /auth/login');
+
             exit;
         }
 
-        $token = str_replace('Bearer ', '', $headers['Authorization']);
-
         try
         {
-            $decoded = JWT::decode($token, new Key($this->secret_key, 'HS256'));
+            $decoded = JWT::decode($_COOKIE['token'], new Key($this->secret_key, 'HS256'));
 
             Auth::setUsuario( $decoded->data );
             return $decoded->data;
         }
         catch( Exception $e )
         {
-            http_response_code( 401 );
-            echo json_encode( ["mensagem" => "Token inválido", "erro" => $e->getMessage( ) ]);
+            if( $this->tipo == "api" )
+            {
+                http_response_code( 401 );
+                echo json_encode( ["mensagem" => "Token inválido", "erro" => $e->getMessage( ) ]);
+            }
+            else
+                header('Location: /auth/login');
+            
             exit;
         }
     }

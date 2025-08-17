@@ -58,7 +58,19 @@ class AuthModel extends Model{
 
             $jwt = JWT::encode( $payload, $this->config['secret_key'], 'HS256');
 
-            return new Retorno( Retorno::SUCESSO, ["mensagem" => "Login realizado com sucesso.", "token" => $jwt]);
+            setcookie(
+                'token',
+                $jwt,
+                [
+                    'expires' => time() + 3600,
+                    'path' => '/',
+                    'secure' => false, // true em produção com HTTPS
+                    'httponly' => true,
+                    'samesite' => 'Strict'
+                ]
+            );
+
+            return new Retorno( Retorno::SUCESSO, ["mensagem" => "Login realizado com sucesso."]);
         }
         else
             return new Retorno( Retorno::ERRO_VALIDACAO, "Usuário ou senha inválida.");
