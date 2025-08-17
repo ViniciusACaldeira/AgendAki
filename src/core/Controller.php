@@ -2,7 +2,11 @@
 
 namespace Vennizlab\Agendaki\core;
 
+use Vennizlab\Agendaki\helpers\Paginacao;
+
 class Controller{
+    private ?Paginacao $paginacao = null;
+
     public function view($view, $data = [] )
     {
         extract($data);
@@ -20,12 +24,15 @@ class Controller{
 
     public function response( $status, $data )
     {
+        $data = [ "status" => $status, "data" => $data ];
+
+        if( $this->paginacao != null )
+            if( $this->paginacao->ePaginado( ) )
+                $data["paginacao"] = $this->paginacao->response( );
+
         header('Content-Type: application/json');
         http_response_code($status); // Opcional: define o código HTTP de resposta
-        echo json_encode([
-            "status" => $status,
-            "data" => $data
-        ]);
+        echo json_encode( $data );
         exit;
     }
 
@@ -71,6 +78,19 @@ class Controller{
 
     public function responseNaoEncontrado( )
     {
-        return $this->response( 400, "Não encontrado!" );
+        return $this->response( 405, "Método não permitido!" );
+    }
+
+    public function getPaginacao( )
+    {
+        if( $this->paginacao == null )
+        {
+            $paginacao = new Paginacao( );
+            $paginacao->init( );
+
+            $this->paginacao = $paginacao;
+        }
+
+        return $this->paginacao;
     }
 }
