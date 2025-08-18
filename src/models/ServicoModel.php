@@ -1,11 +1,13 @@
 <?php
 namespace Vennizlab\Agendaki\models;
 
-use Dotenv\Validator;
+use Exception;
 use PDO;
 use Vennizlab\Agendaki\core\Model;
 use Vennizlab\Agendaki\core\Retorno;
 use Vennizlab\Agendaki\helpers\DatabaseHelper;
+use Vennizlab\Agendaki\helpers\FiltroHelper;
+use Vennizlab\Agendaki\helpers\Paginacao;
 use Vennizlab\Agendaki\helpers\ValidacaoHelper;
 
 class ServicoModel extends Model{
@@ -32,15 +34,16 @@ class ServicoModel extends Model{
 
     public function cadastrarV1( $nome, $descricao, $preco, $data, $preco_inicio, $preco_fim )
     {
-        $validacao = [];
+        $validacao = new ValidacaoHelper( );
+        
+        if( !$validacao->vazio( "Nome é obrigatório.", $nome ) )
+            if( $this->getByNome( $nome ) )
+                $validacao->addErro( "Serviço com o nome ( $nome ) já cadastrado." );
 
-        if( !$nome )
-            array_push( $validacao, "Nome é obrigatório" );
-        else if( $this->getByNome( $nome ) )
-            array_push( $validacao, "Serviço com o nome ( $nome ) já cadastrado." );
+        $validacao->vazio( "Preco é obrigatório.", $preco );
 
-        if( !empty($validacao) )
-            return new Retorno( Retorno::ERRO_VALIDACAO, $validacao );
+        if( $validacao->temErro( ) )
+            return $validacao->retorno( );
 
         $stmt = $this->db->prepare( "INSERT INTO servico (nome, descricao) VALUES (?,?)" );
         $retorno = $stmt->execute( [$nome, $descricao] );
@@ -156,6 +159,26 @@ class ServicoModel extends Model{
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getPaginado( FiltroHelper $filtro, ?Paginacao $paginacao = null )
+    {
+        $query = new DatabaseHelper( );
+        $query->setSQL( "SELECT s.*, IFNULL( hsv.valor, 0.0 ) 'preco' 
+                         FROM servico s
+                         LEFT JOIN historico_servico_valor hsv ON hsv.servico_id = s.id
+                                                               AND hsv.id = ( SELECT id FROM historico_servico_valor WHERE servico_id = s.id ORDER BY data DESC, fim DESC LIMIT 1)" );
+        $query->setPaginacao( $paginacao );
+
+        if( $filtro->tem( "id" ) )
+            $query->addCondicao( "s.id = ?", $filtro->get( "id" ) );
+
+        if( !$filtro->tem( "inativo" ) )
+            $query->addCondicao( "s.ativo != ?", 0 );
+
+        $stmt = $query->execute( $this->db );
+        
+        return new Retorno( Retorno::SUCESSO, $stmt->fetchAll( PDO::FETCH_ASSOC ) );
     }
 
     public function addFuncionarioServico( $id, $servicos, $duracao )
@@ -293,11 +316,14 @@ class ServicoModel extends Model{
     public function get( $id )
     {
         $query = new DatabaseHelper( );
-        $query->setSQL( "SELECT * FROM servico" );
+        $query->setSQL( "SELECT s.*, IFNULL( hsv.valor, 0.0 ) 'preco' 
+                         FROM servico s
+                         LEFT JOIN historico_servico_valor hsv ON hsv.servico_id = s.id
+                                                               AND hsv.id = ( SELECT id FROM historico_servico_valor WHERE servico_id = s.id ORDER BY data DESC, fim DESC LIMIT 1)" );
 
         $parametros = $this->getParametros($id);
 
-        $query->addCondicao( "id IN ($parametros)", $id );
+        $query->addCondicao( "s.id IN ($parametros)", $id );
 
         $retorno = $query->execute( $this->db );
 
@@ -305,5 +331,61 @@ class ServicoModel extends Model{
             return new Retorno( Retorno::SUCESSO, $retorno->fetchAll(PDO::FETCH_ASSOC) );
         else
             return new Retorno( Retorno::ERRO, "Falha ao listar os serviços." );
+    }
+
+    public function editar( $id, $nome, $descricao, $ativo )
+    {
+        $validacao = new ValidacaoHelper( );
+        $validacao->vazio( "ID é obrigatório.", $id );
+        $validacao->vazio( "Nome é obrigatório.", $nome );
+
+        if( $validacao->temErro( ) )
+            return $validacao->retorno( );
+
+        $query = new DatabaseHelper( );
+        $query->setSQL( "UPDATE servico SET Nome = ?, Descricao = ?, Ativo = ? WHERE id = ?" );
+        $query->addParametro( [$nome, $descricao, $ativo, $id] );
+
+        $stmt = $query->execute( $this->db );
+        
+        if( $stmt )
+            return new Retorno( Retorno::SUCESSO, "Serviço alterado com sucesso." );
+        else
+            return new Retorno( Retorno::ERRO, "Falha ao alterar o serviço." );
+    }
+
+    public function inativar( $id )
+    {
+        $validacao = new ValidacaoHelper( );
+        
+        if( !$validacao->nulo( "ID é obrigatório.", $id ) )
+        {
+            $retorno = $this->get( $id );
+
+            if( !$validacao->erroRetorno( $retorno ) )
+                $validacao->vazio( "Serviço não encontrado.", $retorno->getMensagem( ) );
+        }
+
+        if( $validacao->temErro( ) )
+            return $validacao->retorno( );
+
+        try
+        {
+            $query = new DatabaseHelper( );
+            $query->setSQL( "UPDATE servico SET ativo = 0 WHERE id = ?" );
+            $query->addParametro( [$id] );
+
+            $stmt = $query->execute( $this->db );
+
+            if( $stmt )
+                return new Retorno( Retorno::SUCESSO, [ "mensagem" => "Serviço inativado com sucesso." ] );
+            else
+                return new Retorno( Retorno::ERRO, [ "mensagem" => "Falha ao inativar o serviço." ] );
+        }
+        catch( Exception $e )
+        {
+            return new Retorno( Retorno::ERRO, [ "mensagem" => "Falha ao inativar o serviço: ", $e->getMessage( ) ]  );
+        }
+        
     }
 }

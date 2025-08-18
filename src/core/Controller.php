@@ -31,7 +31,7 @@ class Controller{
                 $data["paginacao"] = $this->paginacao->response( );
 
         header('Content-Type: application/json');
-        http_response_code($status); // Opcional: define o código HTTP de resposta
+        http_response_code($status);
         echo json_encode( $data );
         exit;
     }
@@ -68,6 +68,21 @@ class Controller{
                 break;
             default:
                 return null;
+        }
+    }
+
+    public function temCampo( string $campo )
+    {
+        switch( $this->getTipo( ) )
+        {
+            case "GET":
+                return isset($_GET[$campo]);
+                break;
+            case "POST":
+                return isset($_POST[$campo]);
+                break;
+            default:
+                return false;
         }
     }
 

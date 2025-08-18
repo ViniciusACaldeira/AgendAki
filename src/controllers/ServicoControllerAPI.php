@@ -2,6 +2,8 @@
 namespace Vennizlab\Agendaki\controllers;
 
 use Vennizlab\Agendaki\core\Controller;
+use Vennizlab\Agendaki\core\Retorno;
+use Vennizlab\Agendaki\helpers\FiltroHelper;
 use Vennizlab\Agendaki\models\FuncionarioModel;
 use Vennizlab\Agendaki\models\ServicoModel;
 
@@ -17,9 +19,6 @@ class ServicoControllerAPI extends Controller
             $data = $this->getCampo( "data" );
             $preco_inicio = $this->getCampo( "preco_inicio", "00:00" );
             $preco_fim = $this->getCampo( "preco_fim", "23:59" );
-
-            if( !$nome )
-                return $this->response(400, "O nome é obrigatório.");
 
             $servicoModel = new ServicoModel( );
             $retorno = $servicoModel->cadastrarV1( $nome, $descricao, $preco, $data, $preco_inicio, $preco_fim );
@@ -131,10 +130,21 @@ class ServicoControllerAPI extends Controller
 
     public function getServicos( )
     {
-        $servicoModel = new ServicoModel( );
-        $servicos = $servicoModel->getAll( );
-        
-        return $this->response( 200, $servicos );
+        if( $this->isGET( ) )
+        {
+            $servicoModel = new ServicoModel( );
+
+            $filtro = new FiltroHelper( $this );
+            $filtro->add( "id" );
+            $filtro->add( "inativo" );
+
+            $paginacao = $this->getPaginacao( );
+            $retorno = $servicoModel->getPaginado( $filtro, $paginacao );
+            
+            return $this->responseRetorno( $retorno );
+        }
+        else
+            return $this->responseNaoEncontrado( );
     }
 
     public function getPreco( )
@@ -172,6 +182,46 @@ class ServicoControllerAPI extends Controller
         }
         else
             return $this->response( 400, "Não encontrado.");
+    }
+
+    public function editar( )
+    {
+        if( $this->isPOST( ) )
+        {
+            $id = $this->getCampo( "id" );
+            $nome = $this->getCampo( "nome" );
+            $descricao = $this->getCampo( "descricao" );
+            $ativo = $this->getCampo( "ativo", false );
+
+            $servicoModel = new ServicoModel( );
+            $retornoEdicao = $servicoModel->editar( $id, $nome, $descricao, $ativo );
+
+            if( $retornoEdicao->is( Retorno::SUCESSO ) )
+            {
+                $retorno = $servicoModel->get( $id );
+                return $this->responseRetorno( new Retorno( Retorno::SUCESSO, ["mensagem" => $retornoEdicao->getMensagem( ),
+                                                                               "data" => $retorno->getMensagem( ) ]) );
+            }
+            else
+                $this->responseRetorno( $retornoEdicao );
+        }
+        else
+            return $this->responseNaoEncontrado( );
+    }
+
+    public function inativar( )
+    {
+        if( $this->isPOST( ) )
+        {
+            $id = $this->getCampo( "id" );
+
+            $servicoModel = new ServicoModel( );
+            $retorno = $servicoModel->inativar( $id );
+
+            return $this->responseRetorno( $retorno );
+        }
+        else
+            return $this->responseNaoEncontrado( );
     }
 
     public function editarPreco( )

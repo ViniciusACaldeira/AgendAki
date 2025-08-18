@@ -19,7 +19,12 @@ class ValidacaoHelper{
     public function nulo( $mensagem, $obj )
     {
         if( !isset($obj) )
+        {
             $this->addErro( $mensagem );
+            return true;
+        }
+
+        return false;
     }
 
     public function vazio( $mensagem, $obj )
@@ -96,6 +101,17 @@ class ValidacaoHelper{
             return true;
         }
 
+        return false;
+    }
+
+    public function erroRetorno( Retorno $retorno )
+    {
+        if( !$retorno->is(Retorno::SUCESSO) )
+        {
+            $this->addErro( $retorno->getMensagem( ) );
+            return true;
+        }
+        
         return false;
     }
 

@@ -33,6 +33,7 @@ return [
     
     '/servico' => [ServicoController::class, 'index', [[AuthMiddleware::class, 'web']]],
     '/servico/cadastro' => [ServicoController::class, 'cadastro', [[AuthMiddleware::class, 'web']]],
+    '/servico/detalhe' => [ServicoController::class, 'detalhe', [[AuthMiddleware::class, 'web']]],
     
     '/agenda' => [AgendaController::class, 'index', [[AuthMiddleware::class, 'web']]],
     '/agenda/cadastro' => [AgendaController::class, 'cadastro', [[AuthMiddleware::class, 'web']]],
@@ -59,7 +60,9 @@ return [
     '/api/servico/preco' => [ServicoControllerAPI::class, "getPreco"],
     '/api/servico/preco/cadastrar' => [ServicoControllerAPI::class, "cadastrarPreco", [AuthMiddleware::class]],
     '/api/servico/preco/editar' => [ServicoControllerAPI::class, 'editarPreco', [AuthMiddleware::class]],
-
+    '/api/servico/editar' => [ServicoControllerAPI::class, 'editar', [AuthMiddleware::class]],
+    '/api/servico/inativar' => [ServicoControllerAPI::class, 'inativar', [AuthMiddleware::class]],
+    
     '/api/funcionario' => [FuncionarioControllerAPI::class, 'listar', [AuthMiddleware::class]],
 
     '/api/usuario/cliente' => [UsuarioControllerAPI::class, 'listarClientes', [AuthMiddleware::class]],

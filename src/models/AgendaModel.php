@@ -3,7 +3,6 @@ namespace Vennizlab\Agendaki\models;
 
 use Exception;
 use PDO;
-use Vennizlab\Agendaki\controllers\ServicoControllerAPI;
 use Vennizlab\Agendaki\core\Auth;
 use Vennizlab\Agendaki\core\Model;
 use Vennizlab\Agendaki\core\Retorno;

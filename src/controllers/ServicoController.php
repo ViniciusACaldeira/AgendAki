@@ -34,4 +34,9 @@ class ServicoController extends Controller{
             return $this->redirect('servico');
         }
     }
+
+    public function detalhe( )
+    {
+        $this->view( "servico/detalhe" );
+    }
 }
