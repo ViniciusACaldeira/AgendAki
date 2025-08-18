@@ -1,0 +1,126 @@
+#tabela_servicos 
+{
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+#tabela_servicos thead 
+{
+  background: #4CAF50;
+  color: white;
+  text-align: left;
+}
+
+#tabela_servicos th, 
+#tabela_servicos td 
+{
+  padding: 12px 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+#tabela_servicos tbody tr:nth-child(even) 
+{
+  background-color: #f9f9f9;
+}
+
+#tabela_servicos tbody tr:hover 
+{
+  background-color: #f1f1f1;
+}
+
+/* Rodapé */
+#tabela_servicos tfoot td 
+{
+  padding: 0;
+}
+
+#tabela_servicos tfoot .paginacao 
+{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: #fafafa;
+  border-top: 2px solid #eee;
+  font-size: 13px;
+}
+
+/* Inputs */
+#tabela_servicos tfoot input 
+{
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  transition: border 0.2s;
+}
+
+#tabela_servicos tfoot input:focus 
+{
+  border-color: #4CAF50;
+}
+
+/* Botões */
+#tabela_servicos tfoot .paginacao 
+{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: #fafafa;
+  border-top: 2px solid #eee;
+  font-size: 13px;
+}
+
+#tabela_servicos tfoot button 
+{
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  transition: background 0.2s;
+}
+
+#tabela_servicos tfoot button:hover 
+{
+  background: #45a049;
+}
+
+#tabela_servicos tfoot button:disabled 
+{
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+#total_registro 
+{
+  margin-left: auto;
+  color: #555;
+  font-style: italic;
+}
+
+@media(max-width: 600px) 
+{
+  #tabela_servicos tfoot .paginacao 
+  {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  #total_registro 
+  {
+    margin-left: 0;
+  }
+}
