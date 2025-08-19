@@ -1,4 +1,4 @@
-#tabela_servicos 
+[id^="tabela_"] 
 {
   width: 100%;
   border-collapse: collapse;
@@ -10,37 +10,37 @@
   overflow: hidden;
 }
 
-#tabela_servicos thead 
+[id^="tabela_"] thead 
 {
   background: #4CAF50;
   color: white;
   text-align: left;
 }
 
-#tabela_servicos th, 
-#tabela_servicos td 
+[id^="tabela_"] th, 
+[id^="tabela_"] td 
 {
   padding: 12px 15px;
   border-bottom: 1px solid #ddd;
 }
 
-#tabela_servicos tbody tr:nth-child(even) 
+[id^="tabela_"] tbody tr:nth-child(even) 
 {
   background-color: #f9f9f9;
 }
 
-#tabela_servicos tbody tr:hover 
+[id^="tabela_"] tbody tr:hover 
 {
   background-color: #f1f1f1;
 }
 
 /* Rodapé */
-#tabela_servicos tfoot td 
+[id^="tabela_"] tfoot td 
 {
   padding: 0;
 }
 
-#tabela_servicos tfoot .paginacao 
+[id^="tabela_"] tfoot .paginacao 
 {
   display: flex;
   flex-wrap: wrap;
@@ -53,7 +53,7 @@
 }
 
 /* Inputs */
-#tabela_servicos tfoot input 
+[id^="tabela_"] tfoot input 
 {
   padding: 6px 10px;
   border: 1px solid #ccc;
@@ -62,13 +62,13 @@
   transition: border 0.2s;
 }
 
-#tabela_servicos tfoot input:focus 
+[id^="tabela_"] tfoot input:focus 
 {
   border-color: #4CAF50;
 }
 
 /* Botões */
-#tabela_servicos tfoot .paginacao 
+[id^="tabela_"] tfoot .paginacao 
 {
   display: flex;
   flex-wrap: wrap;
@@ -80,7 +80,7 @@
   font-size: 13px;
 }
 
-#tabela_servicos tfoot button 
+[id^="tabela_"] tfoot button 
 {
   background: #4CAF50;
   color: white;
@@ -93,12 +93,12 @@
   transition: background 0.2s;
 }
 
-#tabela_servicos tfoot button:hover 
+[id^="tabela_"] tfoot button:hover 
 {
   background: #45a049;
 }
 
-#tabela_servicos tfoot button:disabled 
+[id^="tabela_"] tfoot button:disabled 
 {
   background: #ccc;
   cursor: not-allowed;
@@ -111,9 +111,91 @@
   font-style: italic;
 }
 
+main [id^="filtro_"] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 15px;
+    background: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 10px;
+}
+
+main [id^="filtro_"] .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 200px;
+    flex: 1;
+}
+
+main [id^="filtro_"] label {
+    font-size: 0.9em;
+    font-weight: 500;
+    color: #333;
+}
+
+main [id^="filtro_"] input[type="text"],
+main [id^="filtro_"] input[type="email"],
+main [id^="filtro_"] input[type="password"],
+main [id^="filtro_"] input[type="number"],
+main [id^="filtro_"] select,
+main [id^="filtro_"] textarea {
+    padding: 10px 12px;
+    font-size: 0.95em;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+    transition: border 0.3s, box-shadow 0.3s;
+    background: #fff;
+}
+
+main [id^="filtro_"] input:focus,
+main [id^="filtro_"] select:focus,
+main [id^="filtro_"] textarea:focus {
+    border-color: #00a8ff;
+    box-shadow: 0 0 4px rgba(0, 168, 255, 0.4);
+}
+
+main [id^="filtro_"] textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+main [id^="filtro_"] .field-inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+main [id^="filtro_"] input[type="checkbox"],
+main [id^="filtro_"] input[type="radio"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+main [id^="filtro_"] button {
+    padding: 10px 20px;
+    background-color: #00a8ff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95em;
+    transition: background 0.3s, transform 0.2s;
+}
+
+main [id^="filtro_"] button:hover {
+    background-color: #0097e6;
+    transform: translateY(-1px);
+}
+
+
+
 @media(max-width: 600px) 
 {
-  #tabela_servicos tfoot .paginacao 
+  [id^="tabela_"] tfoot .paginacao 
   {
     flex-direction: column;
     align-items: flex-start;

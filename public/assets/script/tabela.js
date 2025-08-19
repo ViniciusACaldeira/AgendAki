@@ -42,7 +42,7 @@ class Tabela
         this.method = method;
     }
 
-    setFiltro( filtro )
+    setFiltro( filtro, formatacaoFiltro )
     {
         const form = document.getElementById( filtro );
 
@@ -57,6 +57,9 @@ class Tabela
 
             this.filtro = form;
             this.temFiltro = true;
+        
+            if( formatacaoFiltro != undefined )
+                this.formatacaoFiltro = formatacaoFiltro;
         }
     }
 
@@ -139,6 +142,8 @@ class Tabela
         {
             const formData = new FormData( filtro );
 
+            this.formataFormData( formData );
+
             if( this.method == "get" )
             {
                 const urlSearchParams = new URLSearchParams(formData);
@@ -183,6 +188,21 @@ class Tabela
         });
     }
 
+    formataFormData( formData )
+    {
+        if( this.formatacaoFiltro === undefined )
+            return;
+    
+        Object.entries(this.formatacaoFiltro).forEach( ([campo, formatacao]) => {
+            let valor = formData.get(campo);
+            if( valor !== null )
+            {
+                valor = formatacao( valor );
+                formData.set( campo, valor );
+            }
+        })
+    }
+    
     render( )
     {
         const table = document.getElementById( this.tabela );
