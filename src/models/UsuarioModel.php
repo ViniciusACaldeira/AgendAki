@@ -2,10 +2,12 @@
 
 namespace Vennizlab\Agendaki\models;
 
+use Exception;
 use PDO;
 use Vennizlab\Agendaki\core\Model;
 use Vennizlab\Agendaki\core\Retorno;
 use Vennizlab\Agendaki\helpers\DatabaseHelper;
+use Vennizlab\Agendaki\helpers\ValidacaoHelper;
 
 class UsuarioModel extends Model{
 
@@ -123,5 +125,46 @@ class UsuarioModel extends Model{
         $retorno = $query->execute( $this->db );
 
         return new Retorno( Retorno::SUCESSO, $retorno->fetchAll(PDO::FETCH_ASSOC) );
+    }
+
+    public function cadastrarV1( $nome, $telefone, $email, $senha, $senha_confirmar )
+    {
+        $validacao = new ValidacaoHelper( );
+
+        $validacao->vazio( "Nome obrigatório.", $nome );
+        $validacao->vazio( "Telefone é obrigatório.", $telefone );
+        $validacao->vazio( "Email é obrigatório.", $email );
+        $temSenha = !$validacao->vazio( "Senha é obrigatório.", $senha );
+        $temConfirmacao = !$validacao->vazio( "Confirmação de senha é obrigatório.", $senha_confirmar );
+        
+        if( $temSenha && $temConfirmacao && $senha != $senha_confirmar )
+            $validacao->addErro( "As senhas não coincidem." );
+
+        if( $this->existeUsuario( $email, $telefone ) )
+            $validacao->addErro( "Usuário já cadastrado." );
+
+        if( $validacao->temErro( ) )
+            return $validacao->retorno( );
+
+        $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
+
+        try
+        {
+            $query = new DatabaseHelper( );
+            $query->setSQL( "INSERT INTO usuario (nome, email, telefone, senha) VALUES (?, ?, ?, ?)" );
+            $query->addParametro( [$nome, $email, $telefone, $senhaHash] );
+
+            $stmt = $query->execute( $this->db );
+
+            if( $stmt )
+                return new Retorno( Retorno::SUCESSO, ["mensagem" => "Cadastrado com sucesso.", "data" => [] ] );
+            else
+                return new Retorno( Retorno::ERRO, [ "mensagem" => "Falha ao cadastrar usuário", "data" => [] ] );
+        }
+        catch( Exception $e )
+        {
+            return new Retorno( Retorno::ERRO, [ "mensagem" => "Falha ao cadastrar usuário.", "data" => [] ] );
+        }
+        
     }
 }

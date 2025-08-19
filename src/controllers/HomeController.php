@@ -10,4 +10,9 @@ class HomeController extends Controller{
     {
         $this->view("dashboard");
     }
+
+    public function index( )
+    {
+        $this->view( "cliente/index" );
+    }
 }

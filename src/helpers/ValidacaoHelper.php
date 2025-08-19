@@ -111,12 +111,12 @@ class ValidacaoHelper{
             $this->addErro( $retorno->getMensagem( ) );
             return true;
         }
-        
+
         return false;
     }
 
     public function retorno( )
     {
-        return new Retorno( Retorno::ERRO_VALIDACAO, ["errors" => $this->getValidacao( ) ] );
+        return new Retorno( Retorno::ERRO_VALIDACAO, ["erros" => $this->getValidacao( ) ] );
     }
 }

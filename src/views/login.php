@@ -1,48 +1,145 @@
+<link rel="stylesheet" href="/assets/styles/login.css">
+<link rel="stylesheet" href="/assets/styles/toast.css">
+<div id="toast-container"></div>
 
-<?php
-    use Vennizlab\Agendaki\helpers\Flash;
+<section id="sessao_login">
+    <form id="form_login">
+        <div>
+            <label for="login">Login</label>
+            <input type="text" id="login" name="login">
+        </div>
 
-    if (Flash::has('erro'))
-        echo '<p style="color:red;">' . Flash::get('erro') . '</p>';
+        <div>
+            <label for="senha">Senha</label>
+            <input type="password" id="senha" name="senha">
+        </div>
 
-    if (Flash::has('sucesso'))
-        echo '<p style="color:green;">' . Flash::get('sucesso') . '</p>';
-?>
+        <button type="submit">Login</button>
 
-<section>
-    <h1>Login</h1>
-
-    <form action="login" method="post">
-
-        <label for="login">Telefone ou email</label>
-        <input type="text" name="login" id="login">
-
-        <label for="senha">Senha</label>
-        <input type="password" name="senha" id="senha">
-
-        <button type="submit">Entrar</button>
+        <p style="margin-top:10px; text-align:center;">
+            Não tem conta? 
+            <button type="button" class="link-button" onclick="ativa('cadastro')">Cadastrar-se</button>
+        </p>
     </form>
 </section>
 
-<section>
-    <h1>Cadastro</h1>
+<section id="sessao_cadastro" hidden>
+    <form id="form_cadastro">
+        <div>
+            <label for="cadastro_nome">Nome</label>
+            <input type="text" id="cadastro_nome" name="nome">
+        </div>
 
-    <form action="cadastrar" method="post">
-        <label for="nome">Nome</label>
-        <input type="text" name="nome" id="nome">
+        <div>
+            <label for="cadastro_telefone">Telefone</label>
+            <input type="text" id="cadastro_telefone" name="telefone">
+        </div>
 
-        <label for="telefone">Telefone</label>
-        <input type="text" name="telefone" id="telefone">
+        <div>
+            <label for="cadastro_email">Email</label>
+            <input type="email" id="cadastro_email" name="email">
+        </div>
 
-        <label for="email">Email</label>
-        <input type="email" name="email" id="email">
+        <div>
+            <label for="cadastro_senha">Senha</label>
+            <input type="password" id="cadastro_senha" name="senha">
+        </div>
 
-        <label for="senha">Senha</label>
-        <input type="password" name="senha" id="senha">
-
-        <label for="senha_confirmar">Senha confirmar</label>
-        <input type="password" name="senha_confirmar" id="senha_confirmar">
+        <div>
+            <label for="cadastro_senha_confirmar">Confirmar senha</label>
+            <input type="password" id="cadastro_senha_confirmar" name="senha_confirmar">
+        </div>
 
         <button type="submit">Cadastrar</button>
+
+        <p style="margin-top:10px; text-align:center;">
+            Já tem conta? 
+            <button type="button" class="link-button" onclick="ativa('login')">Login</button>
+        </p>
     </form>
 </section>
+
+<script src="/assets/script/mascara.js"></script>
+<script src="/assets/script/toast.js"></script>
+<script>
+    const sessoes = ['login', 'cadastro'];
+
+    document.getElementById( "form_cadastro" ).addEventListener( "submit", cadastrar );
+    document.getElementById( "form_login" ).addEventListener( "submit", login );
+    document.getElementById( "cadastro_telefone" ).addEventListener( "input", (e) => mascaraTelefone(e) );
+    document.addEventListener( "DOMContentLoaded", ( ) => { ativa("login"); } );
+    
+    function ativa( tipo )
+    {
+        for( let i = 0; i < sessoes.length; i++ )
+        {
+            let sessao = document.getElementById( `sessao_${sessoes[i]}` );
+            const outra = sessoes[i] != tipo;
+            sessao.hidden = outra;
+
+            if( outra )
+                sessao.classList.remove('active');
+            else
+                sessao.classList.add('active');
+        }
+    }
+
+    function login( event )
+    {
+        event.preventDefault( );
+
+        const formData = new FormData( event.target );
+
+        fetch( "http://localhost:8000/api/auth/login", {
+            method: "POST",
+            body: formData
+        })
+        .then( response => response.json() )
+        .then( data => {
+            const retorno = data['data'];
+            if( data['status'] != 200 )
+                mostrarToast( retorno['mensagem'], TOAST_ERRO );
+            else
+                window.location = '/dashboard';
+        })
+        .finally( )
+        .catch( error => {
+            console.error( "Erro na requisição: ", error );
+        });
+    }
+
+    function cadastrar( event )
+    {
+        event.preventDefault( );
+        const telefone = event.target.querySelector("#cadastro_telefone").value;
+
+        const formData = new FormData( event.target );
+        formData.set( "telefone", desmascararTelefone( telefone ) );
+
+        fetch( "http://localhost:8000/api/auth/cadastrar", {
+            method: 'post',
+            body: formData,
+        })
+        .then( response => response.json( ) )
+        .then( response => {
+            const status = response['status'];
+            const data = response['data'];
+            const mensagem = data['mensagem'];
+
+            if( data['erros'] !== undefined )
+            {
+                const erros = data['erros'];
+                erros.forEach( e => mostrarToast( e, TOAST_ERRO ) );
+            }
+            else
+            {
+                mostrarToast( mensagem, status == 200 ? TOAST_SUCESSO : TOAST_ERRO );
+                ativa('login');
+            }
+        })
+        .catch( (error) => {
+            console.log( error );
+            mostrarToast( "Falha ao cadastrar o usuário.", TOAST_ERRO);
+        });
+    }
+</script>

@@ -9,7 +9,6 @@ use Vennizlab\Agendaki\core\Auth;
 use Vennizlab\Agendaki\core\Middleware;
 
 class AuthMiddleware implements Middleware{
-    
     private $secret_key;
     private $tipo;
 

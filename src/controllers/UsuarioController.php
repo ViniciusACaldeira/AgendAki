@@ -27,7 +27,7 @@ class UsuarioController extends Controller
                 $this->redirect("auth/login", $retorno);
         }
         else
-            $this->view("login");
+            $this->render("login");
     }
 
     public function cadastrar( )

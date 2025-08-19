@@ -5,6 +5,7 @@ use Vennizlab\Agendaki\controllers\AgendaControllerAPI;
 use Vennizlab\Agendaki\controllers\AgendamentoController;
 use Vennizlab\Agendaki\controllers\AgendamentoControllerAPI;
 use Vennizlab\Agendaki\controllers\AuthControllerAPI;
+use Vennizlab\Agendaki\controllers\CoreController;
 use Vennizlab\Agendaki\controllers\FuncionarioController;
 use Vennizlab\Agendaki\controllers\FuncionarioControllerAPI;
 use Vennizlab\Agendaki\controllers\HomeController;
@@ -14,7 +15,6 @@ use Vennizlab\Agendaki\controllers\ServicoController;
 use Vennizlab\Agendaki\controllers\ServicoControllerAPI;
 use Vennizlab\Agendaki\controllers\UsuarioControllerAPI;
 use Vennizlab\Agendaki\helpers\Permissoes;
-use Vennizlab\Agendaki\middlewares\AuthMiddleware;
 use Vennizlab\Agendaki\middlewares\PermissaoMiddleware;
 
 // Lista de rotas: 'url' => [Classe, 'método']
@@ -23,53 +23,58 @@ return [
     '/auth/login' => [UsuarioController::class, 'login'],
     '/auth/logout' => [UsuarioController::class, 'logout'],
     '/auth/cadastrar' => [UsuarioController::class, 'cadastrar'],
-    '/dashboard' => [HomeController::class, 'dashboard', [[AuthMiddleware::class, 'web']]],
+    '/dashboard' => [HomeController::class, 'dashboard'],
+    '/notFound' => [CoreController::class, 'naoEncontrada' ],
     
-    '/funcionario' => [FuncionarioController::class, 'index', [[AuthMiddleware::class, 'web']]],
-    '/funcionario/cadastro' => [FuncionarioController::class, 'cadastro', [[AuthMiddleware::class, 'web']]],
-    '/funcionario/cadastrar' => [FuncionarioController::class, 'cadastrar', [[AuthMiddleware::class, 'web']]],
-    '/funcionario/detalhe' => [FuncionarioController::class, 'detalhe', [[AuthMiddleware::class, 'web']]],
-    '/funcionario/atualizarServico' => [FuncionarioController::class, 'atualizaServico', [[AuthMiddleware::class, 'web']]],
+    '/funcionario' => [FuncionarioController::class, 'index'],
+    '/funcionario/cadastro' => [FuncionarioController::class, 'cadastro'],
+    '/funcionario/cadastrar' => [FuncionarioController::class, 'cadastrar'],
+    '/funcionario/detalhe' => [FuncionarioController::class, 'detalhe'],
+    '/funcionario/atualizarServico' => [FuncionarioController::class, 'atualizaServico'],
     
-    '/servico' => [ServicoController::class, 'index', [[AuthMiddleware::class, 'web']]],
-    '/servico/cadastro' => [ServicoController::class, 'cadastro', [[AuthMiddleware::class, 'web']]],
-    '/servico/detalhe' => [ServicoController::class, 'detalhe', [[AuthMiddleware::class, 'web']]],
+    '/servico' => [ServicoController::class, 'index'],
+    '/servico/cadastro' => [ServicoController::class, 'cadastro'],
+    '/servico/detalhe' => [ServicoController::class, 'detalhe'],
     
-    '/agenda' => [AgendaController::class, 'index', [[AuthMiddleware::class, 'web']]],
-    '/agenda/cadastro' => [AgendaController::class, 'cadastro', [[AuthMiddleware::class, 'web']]],
-    '/agenda/cadastrar' => [AgendaController::class, 'cadastrar', [[AuthMiddleware::class, 'web']]],
-    '/agenda/listar' => [AgendaController::class, 'listar', [[AuthMiddleware::class, 'web']]],
+    '/agenda' => [AgendaController::class, 'index'],
+    '/agenda/cadastro' => [AgendaController::class, 'cadastro'],
+    '/agenda/cadastrar' => [AgendaController::class, 'cadastrar'],
+    '/agenda/listar' => [AgendaController::class, 'listar'],
 
-    '/agendamento' => [AgendamentoController::class, 'index', [[AuthMiddleware::class, 'web']]],
-    '/agendamento/cadastro' => [AgendamentoController::class, 'cadastro', [[AuthMiddleware::class, 'web']]],
-    '/agendamento/cadastrar' => [AgendamentoController::class, 'cadastrar', [[AuthMiddleware::class, 'web']]],
+    '/agendamento' => [AgendamentoController::class, 'index'],
+    '/agendamento/cadastro' => [AgendamentoController::class, 'cadastro'],
+    '/agendamento/cadastrar' => [AgendamentoController::class, 'cadastrar'],
+
+    '' => [HomeController::class, "index" ],
     // Adicione outras rotas aqui
 
     '/api/agenda' => [AgendaControllerAPI::class, "listar"],
     '/api/agenda/servico' => [AgendaControllerAPI::class, 'getServicos'],
-    '/api/agenda/cadastrar' => [AgendaControllerAPI::class, "cadastrar", [AuthMiddleware::class]],
+    '/api/agenda/cadastrar' => [AgendaControllerAPI::class, "cadastrar"],
 
     '/api/agendamento/servico/disponivel' => [AgendamentoControllerAPI::class, 'servicosDisponiveis'],
     '/api/agendamento' => [AgendamentoControllerAPI::class, 'listar'],
     '/api/agendamento/cadastrar' => [AgendamentoControllerAPI::class, 'cadastrar'],
 
     '/api/servico/funcionario' => [ServicoControllerAPI::class, 'servicoByFuncionario'],
-    '/api/servico/funcionario/cadastrar' => [ServicoControllerAPI::class, 'cadastrarServicoFuncionario', [AuthMiddleware::class]],
+    '/api/servico/funcionario/cadastrar' => [ServicoControllerAPI::class, 'cadastrarServicoFuncionario'],
     '/api/servico' => [ServicoControllerAPI::class, "getServicos"],
     '/api/servico/cadastrar' => [ServicoControllerAPI::class, "cadastrar"],
     '/api/servico/preco' => [ServicoControllerAPI::class, "getPreco"],
-    '/api/servico/preco/cadastrar' => [ServicoControllerAPI::class, "cadastrarPreco", [AuthMiddleware::class]],
-    '/api/servico/preco/editar' => [ServicoControllerAPI::class, 'editarPreco', [AuthMiddleware::class]],
-    '/api/servico/editar' => [ServicoControllerAPI::class, 'editar', [AuthMiddleware::class]],
-    '/api/servico/inativar' => [ServicoControllerAPI::class, 'inativar', [AuthMiddleware::class]],
-    
-    '/api/funcionario' => [FuncionarioControllerAPI::class, 'listar', [AuthMiddleware::class]],
+    '/api/servico/preco/cadastrar' => [ServicoControllerAPI::class, "cadastrarPreco"],
+    '/api/servico/preco/editar' => [ServicoControllerAPI::class, 'editarPreco'],
+    '/api/servico/editar' => [ServicoControllerAPI::class, 'editar'],
+    '/api/servico/inativar' => [ServicoControllerAPI::class, 'inativar'],
 
-    '/api/usuario/cliente' => [UsuarioControllerAPI::class, 'listarClientes', [AuthMiddleware::class]],
+    '/api/funcionario' => [FuncionarioControllerAPI::class, 'listar'],
 
-    '/api/permissoes' => [PermissaoControllerAPI::class, "listar", [AuthMiddleware::class]],
-    '/api/permissoes/vincular' => [PermissaoControllerAPI::class, "vincular", [AuthMiddleware::class]],
-    '/api/permissoes/funcionario' => [PermissaoControllerAPI::class, "listarFuncionario", [AuthMiddleware::class, [PermissaoMiddleware::class, [Permissoes::CONSULTA_FUNCIONARIO]]]],
+    '/api/usuario/cliente' => [UsuarioControllerAPI::class, 'listarClientes'],
+
+    '/api/permissoes' => [PermissaoControllerAPI::class, "listar"],
+    '/api/permissoes/vincular' => [PermissaoControllerAPI::class, "vincular"],
+    '/api/permissoes/funcionario' => [PermissaoControllerAPI::class, "listarFuncionario", [PermissaoMiddleware::class, [Permissoes::CONSULTA_FUNCIONARIO]]],
 
     '/api/auth/login' => [AuthControllerAPI::class, "login"],
+    '/api/auth/cadastrar' => [AuthControllerAPI::class, "cadastrar" ],
+
 ];

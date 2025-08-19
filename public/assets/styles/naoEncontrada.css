@@ -1,0 +1,37 @@
+.pagina-nao-encontrada 
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 80vh;
+    text-align: center;
+    color: #2f3640;
+}
+
+.pagina-nao-encontrada h2 
+{
+    font-size: 3em;
+    margin-bottom: 20px;
+}
+
+.pagina-nao-encontrada p 
+{
+    font-size: 1.2em;
+    margin-bottom: 30px;
+}
+
+.botao-voltar 
+{
+    padding: 12px 25px;
+    background-color: #00a8ff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background 0.3s;
+}
+
+.botao-voltar:hover 
+{
+    background-color: #0097e6;
+}

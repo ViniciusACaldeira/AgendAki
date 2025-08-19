@@ -1,0 +1,114 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body 
+{
+    background-color: #f5f6fa;
+    color: #333;
+}
+
+nav 
+{
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+nav ul 
+{
+    list-style: none;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+}
+
+nav ul li 
+{
+    position: relative;
+}
+
+nav ul li a 
+{
+    display: block;
+    padding: 15px 20px;
+    text-decoration: none;
+    color: #2f3640;
+    font-weight: 500;
+    transition: background 0.3s, color 0.3s;
+}
+
+nav ul li a:hover 
+{
+    background-color: #00a8ff;
+    color: #fff;
+    border-radius: 4px;
+}
+
+nav ul li ul 
+{
+    position: absolute;
+    top: 100%;
+    left: 0;
+    display: none;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border-radius: 6px;
+    min-width: 200px;
+    z-index: 100;
+}
+
+nav ul li:hover > ul 
+{
+    display: block;
+}
+
+nav ul li ul li a 
+{
+    padding: 10px 15px;
+    color: #2f3640;
+}
+
+nav ul li ul li a:hover 
+{
+    background-color: #00a8ff;
+    color: #fff;
+}
+
+nav ul li.logout 
+{
+    margin-left: auto;
+}
+
+a.logout-link 
+{
+    padding: 10px 20px;
+    background-color: #e84118;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background 0.3s;
+}
+
+a.logout-link:hover 
+{
+    background-color: #c23616;
+}
+
+h1 
+{
+    margin: 20px;
+    font-size: 2em;
+    color: #2f3640;
+}
+
+main 
+{
+    margin: 20px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}

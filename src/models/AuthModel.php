@@ -73,6 +73,6 @@ class AuthModel extends Model{
             return new Retorno( Retorno::SUCESSO, ["mensagem" => "Login realizado com sucesso."]);
         }
         else
-            return new Retorno( Retorno::ERRO_VALIDACAO, "Usuário ou senha inválida.");
+            return new Retorno( Retorno::ERRO_VALIDACAO, ["mensagem" => "Usuário ou senha inválida." ]);
     }
 }

@@ -7,11 +7,29 @@ use Vennizlab\Agendaki\helpers\Paginacao;
 class Controller{
     private ?Paginacao $paginacao = null;
 
+    public function renderNaoEncontrada( )
+    {
+        http_response_code( 404 );
+        $this->render( "naoEncontrada" );
+        exit;
+    }
+
+    public function render( $view, $data = [] )
+    {
+        extract( $data );
+
+        include "../src/views/{$view}.php";
+    }
+
     public function view($view, $data = [] )
     {
         extract($data);
-
+        
+        ob_start();
         include "../src/views/{$view}.php";
+        $conteudo = ob_get_clean();
+
+        include "../src/views/layout.php";
     }
 
     public function redirect($url, $data = [])
@@ -93,7 +111,7 @@ class Controller{
 
     public function responseNaoEncontrado( )
     {
-        return $this->response( 405, "Método não permitido!" );
+        return $this->response( 405, [ "data" => [], "mensagem" => "Método não permitido!" ] );
     }
 
     public function getPaginacao( )
