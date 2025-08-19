@@ -11,7 +11,7 @@ class FuncionarioController extends Controller{
 
     function index( )
     {
-        return $this->view("funcionario");
+        return $this->view("funcionario/index");
     }
 
     function cadastrar( )
@@ -24,7 +24,7 @@ class FuncionarioController extends Controller{
         else
             Flash::set("sucesso", $retorno["sucesso"]);
 
-        return $this->redirect("funcionario");
+        return $this->redirect("funcionario/index");
     }
 
     function cadastro( )

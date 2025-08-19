@@ -6,6 +6,8 @@ use PDO;
 use Vennizlab\Agendaki\core\Model;
 use Vennizlab\Agendaki\core\Retorno;
 use Vennizlab\Agendaki\helpers\DatabaseHelper;
+use Vennizlab\Agendaki\helpers\FiltroHelper;
+use Vennizlab\Agendaki\helpers\Paginacao;
 
 class FuncionarioModel extends Model{
 
@@ -50,18 +52,39 @@ class FuncionarioModel extends Model{
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     
-    public function listar( $id )
+    public function listar( FiltroHelper $filtro, ?Paginacao $paginacao = null )
     {
         $query = new DatabaseHelper( );
         $query->setSQL( "SELECT f.id, u.nome, u.telefone, u.email 
                          FROM funcionario f 
                          INNER JOIN usuario u ON u.id = f.usuario_id" );
 
-        if( !empty( $id ) )
-            $query->addCondicao( "f.id = ?", $id );
+        $query->setPaginacao( $paginacao );
 
-        $stmt = $this->db->prepare( $query->getSQL( ) );
-        $stmt->execute( $query->getParametros( ) );
+        if( $filtro->tem( "id" ) )
+        {
+            $id = $filtro->get( "id" );
+            if( !empty( $id ) )
+                $query->addCondicao( "f.id = ?", $id );
+        }
+
+        if( $filtro->tem( "nome" ) )
+        {
+            $nome = $filtro->get( "nome" );
+            
+            if( !empty( $nome ) )
+                $query->addCondicao( "UPPER(u.nome) LIKE UPPER(?)", "%$nome%" );
+        }
+
+        if( $filtro->tem( "telefone" ) )
+        {
+            $telefone = $filtro->get( "telefone" );
+            
+            if( !empty( $telefone ) )
+                $query->addCondicao( "u.telefone LIKE ? ", "%$telefone%" );
+        }
+
+        $stmt = $query->execute( $this->db );
 
         return new Retorno( Retorno::SUCESSO, $stmt->fetchAll(PDO::FETCH_ASSOC) );
     }

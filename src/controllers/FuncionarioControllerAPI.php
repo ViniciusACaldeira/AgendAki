@@ -3,6 +3,7 @@
 namespace Vennizlab\Agendaki\controllers;
 
 use Vennizlab\Agendaki\core\Controller;
+use Vennizlab\Agendaki\helpers\FiltroHelper;
 use Vennizlab\Agendaki\models\FuncionarioModel;
 
 class FuncionarioControllerAPI extends Controller{
@@ -10,11 +11,15 @@ class FuncionarioControllerAPI extends Controller{
     {
         if( $this->isGET( ) )
         {
-            $id = $this->getCampo( "id" );
+            $filtro = new FiltroHelper( $this );
+            $filtro->add( "id" );
+            $filtro->add( "nome" );
+            $filtro->add( "email" );
+            $filtro->add( "telefone" );
 
             $funcionarioModel = new FuncionarioModel( );
-            
-            return $this->responseRetorno( $funcionarioModel->listar( $id ) );
+            $paginacao = $this->getPaginacao( );
+            return $this->responseRetorno( $funcionarioModel->listar( $filtro, $paginacao ) );
         }
         else
             return $this->response( 400, "Não encontrado.");

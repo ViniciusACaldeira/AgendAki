@@ -1,6 +1,7 @@
 <link rel="stylesheet" href="/assets/styles/toast.css">
 <div id="toast-container"></div>
 
+<link rel="stylesheet" href="/assets/styles/servico/index.css">
 <a href="/dashboard">Voltar</a>
 
 <h1>Serviço</h1>
@@ -10,9 +11,11 @@
 <link rel="stylesheet" href="/assets/styles/tabela.css">
 
 <form id="filtro_servicos" method="GET">
-    <input type="checkbox" name="inativo" id="inativo" checked>
-    <label for="inativo">Considerar Inativo</label>
-
+    <div class="field-inline">
+        <input type="checkbox" name="inativo" id="inativo" checked>
+        <label for="inativo">Considerar Inativo</label>
+    </div>
+  
     <button type="submit">Consultar</button>
 </form>
 <table id="tabela_servicos">
