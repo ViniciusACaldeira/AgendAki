@@ -1,28 +1,32 @@
 function mascaraTelefone(e)
 {
     let value = e.target.value.replace(/\D/g, '');
-    
-    if( value.length > 11 ) 
-        value = value.slice( 0, 11 );
+    e.target.value = mascaraTextoTelefone( value );
+}
 
-    let formatted = value;
+function mascaraTextoTelefone( telefone )
+{
+    if( telefone.length > 11 ) 
+        telefone = telefone.slice( 0, 11 );
 
-    if( value.length > 2 ) 
+    let formatado = telefone;
+
+    if( telefone.length > 2 ) 
     {
-        const ddd = value.slice(0,2);
-        const numero = value.slice(2);
+        const ddd = telefone.slice(0,2);
+        const numero = telefone.slice(2);
 
         if(numero.length > 5) 
-            formatted = `(${ddd}) ${numero.slice(0,5)}-${numero.slice(5)}`;
+            formatado = `(${ddd}) ${numero.slice(0,5)}-${numero.slice(5)}`;
         else if( numero.length > 4 )
-            formatted = `(${ddd}) ${numero.slice(0,4)}-${numero.slice(4)}`;
+            formatado = `(${ddd}) ${numero.slice(0,4)}-${numero.slice(4)}`;
         else
-            formatted = `(${ddd}) ${numero}`;
+            formatado = `(${ddd}) ${numero}`;
     } 
-    else if( value.length > 0 )  
-        formatted = `(${value}`;
+    else if( telefone.length > 0 )  
+        formatado = `(${telefone}`;
 
-    e.target.value = formatted;
+    return formatado;
 }
 
 function desmascararTelefone( telefone )
