@@ -27,4 +27,11 @@ class Auth{
 
         return true;
     }
+
+    public static function isFuncionario( )
+    {
+        $usuario = self::usuario( );
+
+        return $usuario->funcionario && $usuario->funcionario_id > 0;
+    }
 }
