@@ -3,6 +3,7 @@
 namespace Vennizlab\Agendaki\controllers;
 
 use Vennizlab\Agendaki\core\Controller;
+use Vennizlab\Agendaki\helpers\FiltroHelper;
 use Vennizlab\Agendaki\helpers\TipoAgenda;
 use Vennizlab\Agendaki\models\AgendaModel;
 
@@ -37,11 +38,14 @@ class AgendaControllerAPI extends Controller{
     {
         if( $this->isGET( ) )
         {
-            $data = $this->getCampo( "data" );
-            $funcionario = $this->getCampo( "funcionario" );
+            $paginacao = $this->getPaginacao( );
 
+            $filtro = new FiltroHelper( $this );
+            $filtro->add( "data" );
+            $filtro->add( "funcionario" );
             $agendaModel = new AgendaModel( );
-            return $this->responseRetorno( $agendaModel->listar( $data, $funcionario ) );
+
+            return $this->responseRetorno( $agendaModel->listar( $filtro, $paginacao ) );
         }
         else
             return $this->response( 400, "Não encontrado.");

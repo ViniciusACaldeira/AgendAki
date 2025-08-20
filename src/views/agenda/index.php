@@ -1,75 +1,70 @@
-<?php
-    use Vennizlab\Agendaki\helpers\Flash;
-    use Vennizlab\Agendaki\models\AgendaModel;
-    use Vennizlab\Agendaki\models\FuncionarioModel;
-
-    Flash::print( ); 
-?>
-
+<link rel="stylesheet" href="/assets/styles/tabela.css">
 <a href="/dashboard">Voltar</a>
 
 <h1>Agenda</h1>
 <a href="/agenda/cadastro">Cadastrar Agenda</a>
-
-<?php
-
-$agendaModel = new AgendaModel( );
-
-?>
-
-<form action="/agenda/listar" method="POST">
-    <label for="data">Data:</label>
-    <input type="date" name="data" id="data">
-
-    <label for="funcionario">Funcionario</label>
-    <select name="funcionario" id="funcionario">
-        <option value="0">Nenhum</option>
-        <?php
-            $funcionarioModel = new FuncionarioModel( );
-            $funcionarios = $funcionarioModel->getAll();
-
-            foreach( $funcionarios as $funcionario )
-                echo "<option value='".$funcionario['id']."'>".$funcionario['nome']."</option>";
-        ?>
-    </select>
-
-    <button type="submit">Buscar</button>
+<form id="filtro_agenda" action="get">
+    <div class="field">
+        <label for="data">Data</label>
+        <input type="date" name="data" id="data">
+    </div>
+    <div class="field">
+        <label for="funcionario">Funcionário</label>
+        <select name="funcionario" id="funcionario">
+            <option value="">----</option>
+        </select>
+    </div>
+        
+    <button type="submit">Consultar</button>
 </form>
+<table id="tabela_agenda"></table>
 
-<table>
-    <thead>Agendas</thead>
-    <th>Funcionário</th>
-    <th>Data</th>
-    <th>Início</th>
-    <th>Fim</th>
-    <tbody>
-        <?php
-            if(isset($agendas))
-            {
-                foreach( $agendas as $agenda )
-                {
-                    echo "<tr>";
-                    echo "    <td>".$agenda['nome']."</td>";
-                    echo "    <td>".$agenda['data']."</td>";
-                    echo "    <td>".$agenda['inicio']."</td>";
-                    echo "    <td>".$agenda['fim']."</td>";
-                    echo "</tr>";
-                }
-            }
+<script src="/assets/script/util.js"></script>
+<script src="/assets/script/tabela.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => { 
+        coletaFuncionarios( );
+        montaTabela( );
+    });
+
+    function coletaFuncionarios( )
+    {
+        fetch( "http://localhost:8000/api/funcionario" )
+        .then( response => response.json( ) )
+        .then( retorno => {
+            const data = retorno['data'];
+            const status = retorno['status'];
+
+            if( status != 200 )
+                mostrarToast( "Falha ao coletar os funcionários.", TOAST_ERRO );
             else
             {
-                echo "<tr><td coll='4'>Sem agenda aberta.</td></tr>";
+                const select = document.getElementById( "funcionario" );
+                
+                data.forEach( (funcionario) => {
+                    const option = document.createElement( "option" );
+                    option.value = funcionario.id;
+                    option.textContent = funcionario.nome;
+                    
+                    select.appendChild( option );
+                });
             }
-        ?>
-        <tr>
-            <td coll="3"></td>
-            <td></td>
-            <td></td>
-        </tr>
-    </tbody>
-</table>
-<?php
+        })
+        .catch( (error) => {console.log( error ) } );
+    }
 
+    function montaTabela( )
+    {
+        let tabela = new Tabela( "tabela_agenda" );
 
+        tabela.addCampo( "Funcionario", "nome" );
+        tabela.addCampo( "Data", "data", "", (data) => {return formataData(data)} );
+        tabela.addCampo( "Início", "inicio", "" );
+        tabela.addCampo( "Fim", "fim", "" );
+        tabela.setURL( "http://localhost:8000/api/agenda" );
+        tabela.setPaginado( true );
+        tabela.setFiltro( "filtro_agenda" );
 
-?>
+        tabela.render( );
+    }
+</script>

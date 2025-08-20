@@ -59,3 +59,12 @@ function transformarParaSpans( ) {
         input.replaceWith( span );
     });
 }
+
+function formataData( data )
+{
+  if( data === null )
+    return "00/00/0000";
+
+  const date = new Date( data );  
+  return date.toLocaleDateString( "pt-BR" );
+}

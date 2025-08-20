@@ -7,6 +7,8 @@ use Vennizlab\Agendaki\core\Auth;
 use Vennizlab\Agendaki\core\Model;
 use Vennizlab\Agendaki\core\Retorno;
 use Vennizlab\Agendaki\helpers\DatabaseHelper;
+use Vennizlab\Agendaki\helpers\FiltroHelper;
+use Vennizlab\Agendaki\helpers\Paginacao;
 use Vennizlab\Agendaki\helpers\Permissoes;
 use Vennizlab\Agendaki\helpers\TipoAgenda;
 use Vennizlab\Agendaki\helpers\ValidacaoHelper;
@@ -158,7 +160,7 @@ class AgendaModel extends Model{
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function listar( $data, $funcionario )
+    public function listar( FiltroHelper $filtro, ?Paginacao $paginacao = null )
     {
         $query = new DatabaseHelper( );
         $query->setSQL( "SELECT a.id, u.nome, a.data, a.inicio, a.fim 
@@ -166,33 +168,42 @@ class AgendaModel extends Model{
                          INNER JOIN funcionario f ON f.id = a.funcionario_id
                          INNER JOIN usuario u ON u.id = f.usuario_id" );
 
+        $query->setPaginacao( $paginacao );
+
         $validacao = new ValidacaoHelper( );
 
-        if( isset( $data ))
-            $validacao->data( "-Formato de data inválida.", $data );
+        if( $filtro->tem( "data" ) )
+        {
+            $data = $filtro->get( "data" );
+
+            if( !empty( $data ) && !$validacao->data( "-Formato de data inválida.", $data ) )
+                $query->addCondicao( "a.data = ?", $data );
+        }
 
         if( $validacao->temErro( ) )
-            return new Retorno( Retorno::ERRO_VALIDACAO, $validacao->getValidacao( ) );
+            return $validacao->retorno( );
 
-        if( isset( $data ) )
-            $query->addCondicao( "a.data = ?", $data );
-
-        if( isset($funcionario) )
+        if( $filtro->tem( "funcionario" ) )
         {
-            $parametros = $this->getParametros( $funcionario );
-            $query->addCondicao( "f.id IN ($parametros)", $funcionario );
-        }
+            $funcionario = $filtro->get( "funcionario" );
+
+            if( !empty($funcionario) )
+            {
+                $parametros = $this->getParametros( $funcionario );
+                $query->addCondicao( "f.id IN ($parametros)", $funcionario );
+            }
+        }   
+
+        $query->addOrderBy( "a.Data DESC" );
 
         try
         {
-            $stmt = $this->db->prepare( $query->getSQL( ) );
-            $stmt->execute( $query->getParametros( ) );
-
-            return new Retorno( Retorno::SUCESSO, $stmt->fetchAll(PDO::FETCH_ASSOC) );
+            $stmt = $query->execute( $this->db );
+            return new Retorno( Retorno::SUCESSO, $stmt->fetchAll( PDO::FETCH_ASSOC ) );
         }
         catch( Exception $e )
         {
-            return new Retorno( Retorno::ERRO, "Falha ao listar agenda: " . $e->getMessage( ) );
+            return new Retorno( Retorno::ERRO, ["mensagem" => "Falha ao listar agenda: " . $e->getMessage( ), "data" => [] ] );
         }
     }
 

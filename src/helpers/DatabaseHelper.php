@@ -7,6 +7,7 @@ class DatabaseHelper{
     private string $sql;
     private array $parametros = [];
     private array $where = [];
+    private array $orderBy = [];
     private ?Paginacao $paginacao = null;
 
     public function setSQL( $sql )
@@ -42,6 +43,11 @@ class DatabaseHelper{
             $this->paginacao = $paginacao;
     }
 
+    public function addOrderBy( $orderBy )
+    {
+        $this->orderBy[] = $orderBy;
+    }
+    
     private function getPaginacao( ) : Paginacao
     {
         if( $this->paginacao == null )
@@ -59,11 +65,18 @@ class DatabaseHelper{
     {
         $query = $this->sql;
         $where = $this->where;
+        $orderBy = $this->orderBy;
 
         for( $i = 0; $i < count($where); $i++ )
         {
             $query .= $i == 0 ? " WHERE " : " AND ";
             $query .= $where[$i] . " ";
+        }
+
+        for( $i = 0; $i < count($orderBy); $i++ )
+        {
+            $query .= $i == 0 ? " ORDER BY " : " , ";
+            $query .= $orderBy[$i] . " ";
         }
 
         return $query;

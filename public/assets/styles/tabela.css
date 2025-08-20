@@ -191,6 +191,29 @@ main [id^="filtro_"] button:hover {
     transform: translateY(-1px);
 }
 
+main [id^="filtro_"] input[type="date"] {
+    padding: 10px 12px;
+    font-size: 0.95em;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #fff;
+    outline: none;
+    transition: border 0.3s, box-shadow 0.3s;
+    color: #333;
+    font-family: inherit;
+}
+
+main [id^="filtro_"] input[type="date"]:focus {
+    border-color: #00a8ff;
+    box-shadow: 0 0 4px rgba(0, 168, 255, 0.4);
+}
+
+main [id^="filtro_"] input[type="date"]::-webkit-inner-spin-button,
+main [id^="filtro_"] input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(40%) sepia(80%) saturate(200%) hue-rotate(180deg);
+    cursor: pointer;
+}
+
 
 
 @media(max-width: 600px) 

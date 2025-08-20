@@ -43,7 +43,12 @@ class ValidacaoHelper{
         $d = DateTime::createFromFormat('Y-m-d', $data);
 
         if(!$d || $d->format('Y-m-d') !== $data )
+        {
             $this->addErro( $mensagem );
+            return true;
+        }
+
+        return false;
     }
     
     public function naoVazio( $mensagem, $obj )
