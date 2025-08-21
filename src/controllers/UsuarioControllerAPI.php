@@ -15,6 +15,6 @@ class UsuarioControllerAPI extends Controller{
             return $this->responseRetorno( $usuarioModel->listarClientes( ) );
         }
         else
-            return $this->response( 400, "Não encontrado." );
+            return $this->responseNaoEncontrado( );
     }
 }

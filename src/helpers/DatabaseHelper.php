@@ -94,7 +94,7 @@ class DatabaseHelper{
         else
         {
             $query = $this->getSQL( );
-            $query = preg_replace('/SELECT\s+.*?\s+FROM/i', 'SELECT COUNT(*) FROM', $query);
+            $query = preg_replace('/SELECT\s+.*?\s+FROM/is', 'SELECT COUNT(*) FROM', $query);
 
             $stmt = $db->prepare( $query );
             $stmt->execute( $this->getParametros( ) );

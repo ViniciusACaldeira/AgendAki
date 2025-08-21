@@ -7,6 +7,9 @@ use Exception;
 use PDO;
 use Vennizlab\Agendaki\core\Model;
 use Vennizlab\Agendaki\core\Retorno;
+use Vennizlab\Agendaki\helpers\DatabaseHelper;
+use Vennizlab\Agendaki\helpers\FiltroHelper;
+use Vennizlab\Agendaki\helpers\Paginacao;
 use Vennizlab\Agendaki\helpers\ValidacaoHelper;
 
 class AgendamentoModel extends Model
@@ -225,6 +228,76 @@ class AgendamentoModel extends Model
         $stmt->execute($parametros_valores);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getAgendamentosV1( FiltroHelper $filtro, ?Paginacao $paginacao )
+    {
+        $query = new DatabaseHelper( );
+        $query->setPaginacao( $paginacao );
+        
+        $validacao = new ValidacaoHelper( );
+
+        if( $filtro->tem( "data", true ) )
+        {
+            $data = $filtro->get( "data" );
+
+            if( !$validacao->data( "data inválida.", $data ) )
+                $query->addCondicao( "ag.data = ?", $data );
+        }
+
+        if( $filtro->tem( "servicos", true ) )
+        {
+            $servicos = $filtro->get( "servicos" );
+
+            $parametros = $this->getParametros( $servicos ); 
+            $query->addCondicao( "sa.servico_id IN ($parametros)", $servicos );
+        }
+
+        if( $filtro->tem( "funcionarios", true ) )
+        {
+            $funcionarios = $filtro->get( "funcionarios" );
+
+            $parametros = $this->getParametros( $funcionarios );
+            $query->addCondicao( "ag.funcionario_id IN ($parametros)", $funcionarios );
+        }
+
+        if( $filtro->tem( "clientes", true ) )
+        {
+            $clientes = $filtro->get( "clientes" );
+
+            $parametros = $this->getParametros( $clientes );
+            $query->addCondicao( "a.usuario_id IN ($parametros)", $clientes );
+        }
+            
+        if( $validacao->temErro( ) )
+            return $validacao->retorno( );
+
+        
+        $query->setSQL( "SELECT sa.id, uf.Nome 'nome_funcionario', u.Nome 'nome_cliente', u.Telefone 'telefone', ag.data 'data', a.inicio 'inicio_agendamento', a.fim 'fim_agendamento',
+                        s.nome 'nome_servico', CONCAT(CONCAT(a.inicio, ' - '), a.fim) 'horario' 
+                        FROM agendamento a
+                        INNER JOIN agenda_servico sa ON sa.id = a.agenda_servico_id
+                        INNER JOIN agenda ag ON ag.id = sa.agenda_id
+                        INNER JOIN servico s ON s.id = sa.servico_id
+                        INNER JOIN usuario u ON u.id = a.usuario_id
+                        INNER JOIN funcionario f ON f.id = ag.funcionario_id
+                        INNER JOIN usuario uf ON uf.id = f.usuario_id" );
+        $query->addOrderBy( "ag.data DESC, a.inicio, a.fim" );
+
+        try
+        {
+            $stmt = $query->execute( $this->db );
+
+            if( $stmt )
+                return new Retorno( Retorno::SUCESSO, $stmt->fetchAll( PDO::FETCH_ASSOC ) );
+            else
+                return new Retorno( Retorno::ERRO, "Falha ao coletar agendamentos." );
+        }
+        catch( Exception $e )
+        {
+            return new Retorno( Retorno::ERRO, "Falha ao coletar agendamentos: ", $e->getMessage( ) );
+        }
+        
     }
 
     public function getHorariosDisponiveisServicoAgenda( $id )

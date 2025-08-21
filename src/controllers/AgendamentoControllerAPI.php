@@ -4,6 +4,7 @@ namespace Vennizlab\Agendaki\controllers;
 use DateInterval;
 use DateTime;
 use Vennizlab\Agendaki\core\Controller;
+use Vennizlab\Agendaki\helpers\FiltroHelper;
 use Vennizlab\Agendaki\models\AgendamentoModel;
 
 class AgendamentoControllerAPI extends Controller
@@ -25,22 +26,23 @@ class AgendamentoControllerAPI extends Controller
 
     public function listar( )
     {
-        if( $_SERVER['REQUEST_METHOD'] == "POST" )
+        if( $this->isGET( ) )
         {
-            $data = $_POST['data'] ?? null;
-            $funcionarios = $_POST['funcionarios_id'] ?? null;
-            $servicos = $_POST['servicos_id'] ?? null;
-            $usuarios = $_POST['usuarios_id'] ?? null;
-
-            if( !$data && !$funcionarios && !$servicos && !$usuarios )
-                return $this->response( 200, ' - Pelo menos um parâmetro obrigatório.' );
+            $paginacao = $this->getPaginacao( );
+            $filtro = new FiltroHelper( $this );
+            $filtro->add( "data" );
+            $filtro->add( "funcionarios" );
+            $filtro->add( "servicos" );
+            $filtro->add( "clientes" );
 
             $agendamentoModel = new AgendamentoModel( );
-            $agendamentos = $agendamentoModel->getAgendamentos( $data, $funcionarios, $servicos, $usuarios );
-            return $this->response( 200, $agendamentos);
+            
+            $retorno = $agendamentoModel->getAgendamentosV1( $filtro, $paginacao );
+
+            return $this->responseRetorno( $retorno );
         }
         else
-            return $this->response( 400, 'Método não encontrado.');
+            return $this->responseNaoEncontrado( );
     }
 
     public function cadastrar( )

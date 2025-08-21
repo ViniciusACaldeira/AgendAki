@@ -52,6 +52,10 @@ class Tabela
 
             form.addEventListener( 'submit', (event) =>{
                 event.preventDefault( );
+
+                if( this.paginado )
+                    document.getElementById( "pagina" ).value = 1;
+
                 this.build( );
             });
 
@@ -142,11 +146,19 @@ class Tabela
         {
             const formData = new FormData( filtro );
 
-            this.formataFormData( formData );
+            const formDataLimpo = new FormData( );
+            
+            formData.forEach((valor, chave) => {
+                if (valor !== "" && valor != null)
+                    formDataLimpo.append(chave, valor);
+            });
+
+            this.formataFormData( formDataLimpo );
+
 
             if( this.method == "get" )
             {
-                const urlSearchParams = new URLSearchParams(formData);
+                const urlSearchParams = new URLSearchParams(formDataLimpo);
                 const queryString = urlSearchParams.toString();
 
                 if( queryString !== "" )
@@ -163,7 +175,7 @@ class Tabela
             {
                 request = {
                     method: this.method,
-                    body: formData
+                    body: formDataLimpo
                 }
             }
         }
@@ -221,7 +233,7 @@ class Tabela
         const tfoot = document.createElement( "tfoot" );
         const tr = document.createElement( "tr" );
         const td = document.createElement( "td" );
-        td.colSpan = 4;
+        td.colSpan = this.dados_coluna.length;
 
         const div = document.createElement( "div" );
         div.className = "paginacao";

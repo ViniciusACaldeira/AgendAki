@@ -68,7 +68,7 @@ return [
 
     '/api/funcionario' => [FuncionarioControllerAPI::class, 'listar'],
 
-    '/api/usuario/cliente' => [UsuarioControllerAPI::class, 'listarClientes'],
+    '/api/cliente' => [UsuarioControllerAPI::class, 'listarClientes'],
 
     '/api/permissoes' => [PermissaoControllerAPI::class, "listar"],
     '/api/permissoes/vincular' => [PermissaoControllerAPI::class, "vincular"],

@@ -1,114 +1,137 @@
+<link rel="stylesheet" href="/assets/styles/tabela.css">
+
 <a href="dashboard">Voltar</a>
 
 <h1>Agendamento</h1>
 <a href="agendamento/cadastro">Cadastrar agendamento</a>
 
-<section id="filtro">
-    <label for="data">Data</label>
-    <input type="date" name="data" id="data"/>
 
-    <label for="funcionarios">Funcionários:</label>
-    <select name="funcionarios" id="funcionarios" multiple>
-        <option value="">Nenhum</option>
-        <?php foreach($data["funcionarios"] as $funcionario): ?>
-            <option value="<?= $funcionario['id']?>"><?= $funcionario['nome'] ?></option>
-        <?php endforeach;?>
-    </select>
+<form id="filtro_agendamento">
+    <div class="field">
+        <label for="data">Data</label>
+        <input type="date" name="data" id="data"/>
+    </div>
 
-    <label for="servicos">Serviços:</label>
-    <select name="servicos" id="servicos" multiple>
-        <option value="">Nenhum</option>
-        <?php foreach($data["servicos"] as $servico): ?>
-            <option value="<?= $servico['id']?>"><?= $servico['nome'] ?></option>
-        <?php endforeach;?>
-    </select>
+    <div class="field">
+        <label for="funcionarios">Funcionários</label>
+        <select name="funcionarios[]" id="funcionarios">
+            <option value="">Nenhum</option>
+        </select>
+    </div>
 
-    <label for="clientes">Clientes:</label>
-    <select name="clientes" id="clientes" multiple>
-        <option value="">Nenhum</option>
-        <?php foreach($data["clientes"] as $cliente): ?>
-            <option value="<?= $cliente['id']?>"><?= $cliente['nome'] ?></option>
-        <?php endforeach;?>
-    </select>
+    <div class="field">
+        <label for="servicos">Serviços</label>
+        <select name="servicos[]" id="servicos">
+            <option value="">Nenhum</option>
+        </select>
+    </div>
+    
+    <div class="field">
+        <label for="clientes">Clientes</label>
+        <select name="clientes[]" id="clientes" multiple>
+            <option value="">Nenhum</option>
+        </select>
+    </div>
 
-    <button type="button" onclick="listar()">Buscar</button>
-</section>
+    <button type="submit">Consultar</button>
+</form>
 
-<table>
-    <thead>
-        <th>Data</th>
-        <th>Horário</th>
-        <th>Serviço</th>
-        <th>Funcionário</th>
-        <th>Usuário</th>
-    </thead>
+<table id="tabela_agendamento"></table>
 
-    <tbody id="agendamentos">
-
-    </tbody>
-</table>
-
+<script src="/assets/script/mascara.js"></script>
+<script src="/assets/script/util.js"></script>
+<script src="/assets/script/tabela.js"></script>
 <script>
-    function listar( )
+    window.addEventListener( "DOMContentLoaded", ( ) => {
+        coletaServico( );
+        coletaFuncionario( );
+        coletaCliente( );
+
+        montarTabela( );
+    });
+
+    function coletaFuncionario( )
     {
-        const data = document.getElementById( "data" ).value;
-        const servicos = getOpcoesSelecionadas( document.getElementById( "servicos" ) );
-        const funcionarios = getOpcoesSelecionadas( document.getElementById( "funcionarios") );
-        const clientes = getOpcoesSelecionadas( document.getElementById( "clientes" )) ;
-
-        const formData = new FormData( );
-        formData.append("data", data);
-        formData.append("funcionarios_id", funcionarios );
-        formData.append("servicos_id", servicos);
-        formData.append("usuarios_id", clientes);
-
-        fetch(`http://localhost:8000/api/agendamento`, {
-            method: "POST",
-            body: formData
+        fetch( "http://localhost:8000/api/funcionario", {
+            method: 'get'
         })
-        .then( response => response.json() )
-        .then( data => {
-            montaLista( data['data'] );
+        .then( response => response.json( ) )
+        .then( retorno => {
+            const funcionario = retorno['data'];
+            const select = document.getElementById( "funcionarios" );
+
+            funcionario.forEach( f => {
+                const option = document.createElement( "option" );
+                option.value = f.id;
+                option.textContent = f.nome;
+
+                select.appendChild( option );
+            });
         })
-        .catch( error => {
-            console.error( "Erro na requisição: ", error );
+        .catch( (error) => {
+            console.error( "Falha ao coletar Funcionario: ", error );
         });
     }
 
-    function montaLista( agendas )
+    function coletaServico( )
     {
-        const tabela = document.getElementById("agendamentos");
-        tabela.innerText = "";
+        fetch( "http://localhost:8000/api/servico", {
+            method: 'get'
+        })
+        .then( response => response.json( ) )
+        .then( retorno => {
+            const servico = retorno['data'];
+            const select = document.getElementById( "servicos" );
 
-        agendas.forEach( (data, index) => {
-            const tr = document.createElement("tr");
-            tr.appendChild( criaLinha(data['Data']));
-            tr.appendChild( criaLinha( `${data['Inicio_Agendamento']} - ${data['Fim_Agendamento']}`));
-            tr.appendChild( criaLinha(data['Nome_Servico']));
-            tr.appendChild( criaLinha(data['Nome_Funcionario']));
-            tr.appendChild( criaLinha(`${data['Nome']} - ${data['Telefone']}`));
+            servico.forEach( f => {
+                const option = document.createElement( "option" );
+                option.value = f.id;
+                option.textContent = f.nome;
+
+                select.appendChild( option );
+            });
+        })
+        .catch( (error) => {
+            console.error( "Falha ao coletar Serviços: ", error );
+        });
+    }
+
+    function coletaCliente( )
+    {
+        fetch( "http://localhost:8000/api/cliente", {
+            method: 'get'
+        })
+        .then( response => response.json( ) )
+        .then( retorno => {
+            const cliente = retorno['data'];
+            const select = document.getElementById( "clientes" );
+
+            cliente.forEach( f => {
+                const option = document.createElement( "option" );
+                option.value = f.id;
+                option.textContent = f.nome;
             
-            tabela.appendChild( tr );
+                select.appendChild( option );
+            });
+        })
+        .catch( (error) => {
+            console.error( "Falha ao coletar Cliente: ", error );
         });
     }
 
-    function criaLinha( valor )
+    function montarTabela( )
     {
-        const td = document.createElement("td");
-        td.innerText = valor;
+        let tabela = new Tabela( "tabela_agendamento" );
 
-        return td;
-    }
+        tabela.addCampo( "Data", "data", "", (data) => { return formataData(data)} );
+        tabela.addCampo( "Horário", "horario", "" );
+        tabela.addCampo( "Serviço", "nome_servico", "" );
+        tabela.addCampo( "Funcionario", "nome_funcionario", "" );
+        tabela.addCampo( "Cliente", "nome_cliente", "" );
+        tabela.setURL( "http://localhost:8000/api/agendamento" );
+        tabela.setPaginado( true );
+        tabela.setFiltro( "filtro_agendamento" );
 
-    function getOpcoesSelecionadas( select )
-    {
-        const options = select.options;
-        let selecionados = [];
-        
-        for( let i = 0; i < options.length; i++ )
-            if( options[i].selected )
-                selecionados.push( options[i].value );
-
-        return selecionados
+        tabela.render( );
     }
 </script>

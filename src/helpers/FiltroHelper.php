@@ -30,10 +30,10 @@ class FiltroHelper
         $this->addFiltro( $campo, $this->controller->getCampo( $campo, $default ) );
     }
 
-    public function tem( string $campo ): bool
+    public function tem( string $campo, bool $validaEmpty = false ): bool
     {
         foreach( $this->filtro as $f )
-            if( $f['campo'] === $campo )
+            if( $f['campo'] === $campo && ( !$validaEmpty || !empty( $f['valor'] ) ) )
                 return true;
 
         return false;
