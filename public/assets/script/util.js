@@ -68,3 +68,8 @@ function formataData( data )
   const date = new Date( data );  
   return date.toLocaleDateString( "pt-BR" );
 }
+
+function redireciona( url )
+{
+  window.location = url;
+}

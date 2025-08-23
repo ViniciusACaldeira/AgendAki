@@ -390,6 +390,7 @@ class Tabela
                 {
                     const td = document.createElement( "td" );
                     let texto = data[this.dados_coluna[i]['campo']];
+                    td.dataset.label = this.dados_coluna[i]['nome'];
 
                     if( texto == undefined )
                         texto = this.dados_coluna[i]['alternativo'];

@@ -1,4 +1,5 @@
-* {
+*
+{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -17,12 +18,22 @@ nav
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
+.nav-container 
+{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    position: relative;
+}
+
 nav ul 
 {
     list-style: none;
     display: flex;
     align-items: center;
     padding: 0 20px;
+    flex-wrap: wrap;
 }
 
 nav ul li 
@@ -47,36 +58,6 @@ nav ul li a:hover
     border-radius: 4px;
 }
 
-nav ul li ul 
-{
-    position: absolute;
-    top: 100%;
-    left: 0;
-    display: none;
-    background-color: #fff;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    border-radius: 6px;
-    min-width: 200px;
-    z-index: 100;
-}
-
-nav ul li:hover > ul 
-{
-    display: block;
-}
-
-nav ul li ul li a 
-{
-    padding: 10px 15px;
-    color: #2f3640;
-}
-
-nav ul li ul li a:hover 
-{
-    background-color: #00a8ff;
-    color: #fff;
-}
-
 nav ul li.logout 
 {
     margin-left: auto;
@@ -97,11 +78,37 @@ a.logout-link:hover
     background-color: #c23616;
 }
 
-h1 
+.arrow 
 {
-    margin: 20px;
-    font-size: 2em;
+    display: inline-block;
+    margin-left: 5px;
+    transition: transform 0.3s;
+}
+
+nav ul li ul.submenu 
+{
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    flex-direction: column;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border-radius: 6px;
+    min-width: 200px;
+    z-index: 100;
+}
+
+nav ul li ul.submenu li a 
+{
+    padding: 10px 15px;
     color: #2f3640;
+}
+
+nav ul li ul.submenu li a:hover 
+{
+    background-color: #00a8ff;
+    color: #fff;
 }
 
 main 
@@ -111,4 +118,133 @@ main
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+h1 
+{
+    margin-bottom: 15px;
+    font-size: 2em;
+}
+
+.hamburger 
+{
+    display: none;
+    font-size: 2em;
+    cursor: pointer;
+}
+
+@media (min-width: 769px) 
+{
+    nav ul li:hover > ul.submenu {
+        display: flex;
+    }
+
+    nav ul li a .arrow {
+        display: none;
+    }
+
+    nav ul {
+        flex-wrap: nowrap;
+    }
+
+    .nav-container ul {
+        display: flex;
+        align-items: center;
+        flex-wrap: nowrap;
+        width: 100%;
+    }
+
+    .nav-container ul li.logout {
+        margin-left: auto;
+    }
+}
+
+@media (max-width: 768px) 
+{
+    .hamburger {
+        display: block;
+    }
+
+    nav ul {
+        position: absolute;
+        top: 45px;
+        left: 0;
+        right: 0;
+        background-color: #fff;
+        flex-direction: column;
+        overflow: hidden;
+        max-height: 0;
+        transition: max-height 0.5s ease;
+    }
+
+    nav ul.show {
+        max-height: 2000px;
+    }
+
+    nav ul li {
+        width: 100%;
+    }
+
+    nav ul li a {
+        padding: 12px 20px;
+    }
+
+    nav ul li.logout {
+        margin-left: 0;
+        margin-bottom: 5px;
+    }
+
+    nav ul {
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    nav ul li ul.submenu {
+        position: static;
+        box-shadow: none;
+        border-radius: 0;
+        display: flex;
+        flex-direction: column;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease;
+    }
+
+    nav ul li.active > ul.submenu {
+        max-height: 500px;
+    }
+
+    nav ul li.active > a .arrow {
+        transform: rotate(90deg);
+    }
+
+    main {
+        margin: 15px;
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 1.5em;
+    }
+
+    nav ul.show {
+        max-height: 2000px;
+    }
+}
+
+@media (max-width: 480px) 
+{
+    main {
+        margin: 10px;
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 1.2em;
+    }
+
+    nav ul li a {
+        padding: 10px;
+    }
 }

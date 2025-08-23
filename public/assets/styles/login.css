@@ -3,9 +3,10 @@ body
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     background: #f0f2f5;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
 }
 
 section 
@@ -15,6 +16,7 @@ section
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     width: 350px;
+    max-width: 95%;
 
     position: absolute;
     opacity: 0;
@@ -30,9 +32,17 @@ section.active
     pointer-events: all;
 }
 
+form 
+{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
 form div 
 {
     margin-bottom: 15px;
+    width: 100%;
 }
 
 label 
@@ -50,6 +60,7 @@ input
     border-radius: 6px;
     border: 1px solid #ccc;
     font-size: 14px;
+    box-sizing: border-box;
 }
 
 input:focus 
@@ -68,6 +79,7 @@ form button[type="submit"]
     color: white;
     font-size: 16px;
     cursor: pointer;
+    box-sizing: border-box;
 }
 
 form button[type="submit"]:hover 
@@ -85,4 +97,28 @@ form button[type="submit"]:hover
     text-decoration: underline;
     padding: 0;
     font-size: 14px;
+}
+
+@media (max-width: 687px) 
+{
+    section {
+        width: 75%;
+        padding: 20px;
+    }
+
+    input, form button[type="submit"] {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    label, .link-button {
+        font-size: 13px;
+    }
+
+    body {
+        min-height: 100vh;
+        padding: 0;
+        justify-content: center;
+        align-items: center;
+    }
 }
