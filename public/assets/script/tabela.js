@@ -233,7 +233,7 @@ class Tabela
         const tfoot = document.createElement( "tfoot" );
         const tr = document.createElement( "tr" );
         const td = document.createElement( "td" );
-        td.colSpan = this.dados_coluna.length;
+        td.colSpan = this.dados_coluna.length + (this.temAcao ? 1 : 0);
 
         const div = document.createElement( "div" );
         div.className = "paginacao";
