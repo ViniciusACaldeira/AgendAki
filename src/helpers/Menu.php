@@ -21,12 +21,17 @@ class MenuDTO
 
     public function toHTML( )
     {
-        $html = "<li>
-                    <a href='$this->url'>$this->nome</a>";
+        $temSubmenu = !empty( $this->subMenu );
 
-        if( !empty( $this->subMenu ) )
+        $classeSubmenu = $temSubmenu ? "class='has-submenu'"  : "";
+        $arrow = $temSubmenu ? "<span class='arrow'>▾</span>" : "";
+
+        $html = "<li $classeSubmenu>
+                    <a href='$this->url'>$this->nome$arrow</a>";
+
+        if( $temSubmenu )
         {
-            $html .= "<ul>";
+            $html .= "<ul class='submenu'>";
 
             foreach( $this->subMenu as $menu )
                 $html .= $menu->toHTML( );
@@ -78,15 +83,18 @@ class Menu{
             $rotas = $this->usuario;
 
         $html = "<nav>
-                    <ul>";
+                    <div class='nav-container'>
+                        <div class='hamburger' id='hamburger'>☰</div>
+                        <ul id='nav-menu'>";
 
         foreach( $rotas as $rota )
             $html .= $rota->toHTML( );
         
-        $html .= "      <li class='logout'>
-                            <a href='/auth/logout' class='logout-link'>Logout</a>
-                        </li>
-                    </ul>
+        $html .= "          <li class='logout'>
+                                <a href='/auth/logout' class='logout-link'>Logout</a>
+                            </li>
+                        </ul>
+                    </div>
                   </nav>";
 
         return $html;
