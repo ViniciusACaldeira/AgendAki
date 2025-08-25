@@ -1,0 +1,76 @@
+main section {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+main section h1 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 1.8em;
+    color: #2f3640;
+}
+
+main form[id^="form_cadastro_"] .field {
+    margin-bottom: 18px;
+    display: flex;
+    flex-direction: column;
+}
+
+main form[id^="form_cadastro_"] .field-group {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 18px;
+}
+
+main form[id^="form_cadastro_"] .field-group .field {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+main form[id^="form_cadastro_"] label {
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #2f3640;
+}
+
+main form[id^="form_cadastro_"] input {
+    padding: 10px 12px;
+    border: 1px solid #dcdde1;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+main form[id^="form_cadastro_"] input:focus {
+    border-color: #00a8ff;
+    box-shadow: 0 0 6px rgba(0,168,255,0.25);
+    outline: none;
+}
+
+main form[id^="form_cadastro_"] button {
+    width: 100%;
+    padding: 12px;
+    background-color: #00a8ff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-top: 10px;
+}
+
+main form[id^="form_cadastro_"] button:hover {
+    background-color: #0090d1;
+}
+
+main form[id^="form_cadastro_"] .field-group:last-of-type {
+    margin-bottom: 0;
+}
+
+@media (max-width: 687px) {
+    main form[id^="form_cadastro_"] .field-group {
+        flex-direction: column;
+    }
+}

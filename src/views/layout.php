@@ -19,5 +19,7 @@
     <main>
         <?= $conteudo ?>
     </main>
+
+    <script src="/assets/script/agendaki.js.php"></script>
 </body>
 </html>

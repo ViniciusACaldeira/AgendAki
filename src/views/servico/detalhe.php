@@ -112,7 +112,7 @@
 
         document.getElementById( "id" ).value = id;
 
-        fetch( `http://localhost:8000/api/servico?id=${id}&inativo=on`, {
+        fetch( BASE_URL + `/api/servico?id=${id}&inativo=on`, {
             method: 'get'
         })
         .then( response => response.json( ) )
@@ -130,7 +130,7 @@
         const parametros = getParametros( );
         const id = parametros.id;
 
-        fetch( `http://localhost:8000/api/servico/preco?servico_id=${id}`,{
+        fetch( BASE_URL + `/api/servico/preco?servico_id=${id}`,{
             method: 'get'
         })
         .then( response => response.json( ) )

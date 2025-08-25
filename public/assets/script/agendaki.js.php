@@ -1,3 +1,11 @@
+<?php
+    header("Content-Type: application/javascript");
+    $config = require_once __DIR__ . '/../../../config/config.php';
+
+    $baseUrl = $config['base_url'];
+?>
+const BASE_URL = "<?= $baseUrl ?>";
+
 const hamburger = document.getElementById('hamburger');
 const navMenu = document.getElementById('nav-menu');
 

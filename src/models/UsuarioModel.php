@@ -26,6 +26,27 @@ class UsuarioModel extends Model{
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function excluirUsuario( $id )
+    {
+        $query = new DatabaseHelper( );
+        $query->setSQL( "DELETE FROM usuario" );
+        $query->addCondicao( "id = ?", $id );
+
+        try
+        {
+            $retorno = $query->execute( $this->db );
+
+            if( $retorno )
+                return new Retorno( Retorno::SUCESSO, "Usuário excluído com sucesso." );
+            else
+                return new Retorno( Retorno::ERRO, "Falha ao cadastrar usuário." );
+        }
+        catch( Exception $e )
+        {
+            return new Retorno( Retorno::ERRO, "Falha ao excluir usuário: ", $e->getMessage( ) );
+        }
+    }
+
     public function login()
     {
         $login = $_POST['login'] ?? null;
@@ -157,7 +178,7 @@ class UsuarioModel extends Model{
             $stmt = $query->execute( $this->db );
 
             if( $stmt )
-                return new Retorno( Retorno::SUCESSO, ["mensagem" => "Cadastrado com sucesso.", "data" => [] ] );
+                return new Retorno( Retorno::SUCESSO, ["mensagem" => "Cadastrado com sucesso.", "data" => ["id" => $this->db->lastInsertId()] ] );
             else
                 return new Retorno( Retorno::ERRO, [ "mensagem" => "Falha ao cadastrar usuário", "data" => [] ] );
         }

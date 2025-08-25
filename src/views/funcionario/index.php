@@ -47,7 +47,7 @@
 
     function detalhar( id )
     {
-        window.location = "http://localhost:8000/funcionario/detalhe?id=" + id;
+        window.location = BASE_URL + "/funcionario/detalhe?id=" + id;
     }
 
     function montaTabela( )
@@ -57,7 +57,7 @@
         tabela.addCampo( "Nome", "nome" );
         tabela.addCampo( "Email", "email", "" );
         tabela.addCampo( "Telefone", "telefone", "", (telefone) => { return mascaraTextoTelefone( telefone ) } );
-        tabela.setURL( "http://localhost:8000/api/funcionario" );
+        tabela.setURL( BASE_URL + "/api/funcionario" );
         tabela.setPaginado( true );
         tabela.setFiltro( "filtro_funcionarios", formatacaoData );
 

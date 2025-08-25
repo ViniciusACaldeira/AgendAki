@@ -67,7 +67,8 @@ return [
     '/api/servico/inativar' => [ServicoControllerAPI::class, 'inativar'],
 
     '/api/funcionario' => [FuncionarioControllerAPI::class, 'listar'],
-
+    '/api/funcionario/cadastrar' => [FuncionarioControllerAPI::class, 'cadastrar'],
+    
     '/api/cliente' => [UsuarioControllerAPI::class, 'listarClientes'],
 
     '/api/permissoes' => [PermissaoControllerAPI::class, "listar"],

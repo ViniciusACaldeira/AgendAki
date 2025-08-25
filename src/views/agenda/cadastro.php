@@ -45,7 +45,7 @@
         let funcionario = event.value;
         document.getElementById("servicos").innerText = "";
 
-        fetch(`http://localhost:8000/api/servico/funcionario?id=${funcionario}`)
+        fetch( BASE_URL + `/api/servico/funcionario?id=${funcionario}`)
         .then( response => response.json() )
         .then( data => {
             montaServicos( data['data'] );

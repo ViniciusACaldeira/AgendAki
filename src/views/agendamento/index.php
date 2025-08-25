@@ -52,7 +52,7 @@
 
     function coletaFuncionario( )
     {
-        fetch( "http://localhost:8000/api/funcionario", {
+        fetch( BASE_URL + "/api/funcionario", {
             method: 'get'
         })
         .then( response => response.json( ) )
@@ -75,7 +75,7 @@
 
     function coletaServico( )
     {
-        fetch( "http://localhost:8000/api/servico", {
+        fetch( BASE_URL + "/api/servico", {
             method: 'get'
         })
         .then( response => response.json( ) )
@@ -98,7 +98,7 @@
 
     function coletaCliente( )
     {
-        fetch( "http://localhost:8000/api/cliente", {
+        fetch( BASE_URL + "/api/cliente", {
             method: 'get'
         })
         .then( response => response.json( ) )
@@ -128,7 +128,7 @@
         tabela.addCampo( "Serviço", "nome_servico", "" );
         tabela.addCampo( "Funcionario", "nome_funcionario", "" );
         tabela.addCampo( "Cliente", "nome_cliente", "" );
-        tabela.setURL( "http://localhost:8000/api/agendamento" );
+        tabela.setURL( BASE_URL + "/api/agendamento" );
         tabela.setPaginado( true );
         tabela.setFiltro( "filtro_agendamento" );
 

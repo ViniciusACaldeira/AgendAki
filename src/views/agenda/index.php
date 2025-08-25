@@ -29,7 +29,7 @@
 
     function coletaFuncionarios( )
     {
-        fetch( "http://localhost:8000/api/funcionario" )
+        fetch( BASE_URL + "/api/funcionario" )
         .then( response => response.json( ) )
         .then( retorno => {
             const data = retorno['data'];
@@ -61,7 +61,7 @@
         tabela.addCampo( "Data", "data", "", (data) => {return formataData(data)} );
         tabela.addCampo( "Início", "inicio", "" );
         tabela.addCampo( "Fim", "fim", "" );
-        tabela.setURL( "http://localhost:8000/api/agenda" );
+        tabela.setURL( BASE_URL + "/api/agenda" );
         tabela.setPaginado( true );
         tabela.setFiltro( "filtro_agenda" );
 

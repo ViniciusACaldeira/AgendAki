@@ -63,7 +63,7 @@
 
         document.getElementById("servicos").innerText = "";
 
-        fetch(`http://localhost:8000/api/agenda/servico?id=${agenda_id}`)
+        fetch(BASE_URL + `/api/agenda/servico?id=${agenda_id}`)
         .then( response => response.json() )
         .then( data => {
             montaServicos( data['data'] );
@@ -118,7 +118,7 @@
         label.appendChild( select );
         section.appendChild( label );
 
-        fetch( `http://localhost:8000/api/agendamento/servico/disponivel?id=${servico}` )
+        fetch( BASE_URL + `/api/agendamento/servico/disponivel?id=${servico}` )
         .then( response => response.json() )
         .then( data => {
             data['data'].forEach( (intervalo, index) => {

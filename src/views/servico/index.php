@@ -79,7 +79,7 @@
         tabela.addCampo( "Nome", "nome" );
         tabela.addCampo( "Descrição", "descricao", "" );
         tabela.addCampo( "Preço", "preco", "", (texto) => { return ajustaPreco(texto)} );
-        tabela.setURL( "http://localhost:8000/api/servico" );
+        tabela.setURL( BASE_URL + "/api/servico" );
         tabela.setPaginado( true );
         tabela.setFiltro( "filtro_servicos" );
 
@@ -99,6 +99,6 @@
 
     function detalhar( id )
     {
-        window.location = "http://localhost:8000/servico/detalhe?id=" + id;
+        window.location = BASE_URL + "/servico/detalhe?id=" + id;
     }
 </script>

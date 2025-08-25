@@ -2,6 +2,7 @@
 
 namespace Vennizlab\Agendaki\models;
 
+use Exception;
 use PDO;
 use Vennizlab\Agendaki\core\Model;
 use Vennizlab\Agendaki\core\Retorno;
@@ -29,6 +30,47 @@ class FuncionarioModel extends Model{
         }
 
         return $retorno;
+    }
+
+    public function cadastrarV1( $nome, $telefone, $email, $senha, $senha_confirmar )
+    {
+        $cadastrouFuncionario = true;
+        
+        $usuario = new UsuarioModel( );
+        $retorno = $usuario->cadastrarV1( $nome, $telefone, $email, $senha, $senha_confirmar );
+
+        if( $retorno->is( Retorno::SUCESSO ) )
+        {
+            $id = $retorno->getMensagem( )['data']['id'];
+
+            try
+            {
+                $query = new DatabaseHelper( );
+                $query->setSQL( "INSERT INTO funcionario (usuario_id) VALUES (?)" );
+                $query->addParametro( $id );
+
+                $retorno = $query->execute( $this->db );
+
+                if( $retorno )
+                    return new Retorno( Retorno::SUCESSO, ["mensagem" => "Funcionário cadastrado com sucesso.", "data" => []] );
+                else
+                {
+                    $cadastrouFuncionario = false;
+                    return new Retorno( Retorno::ERRO, ["mensagem" => "Falha ao cadastrar Usuário."]);
+                }
+            }
+            catch( Exception $e )
+            {
+               return new Retorno( Retorno::ERRO, ["mensagem" => "Falha ao cadastrar Usuário: ", $e->getMessage( ) ]);
+            }
+            finally
+            {
+                if( !$cadastrouFuncionario )
+                    $usuario->excluirUsuario( $id );
+            }
+        }
+        else
+            return $retorno;
     }
 
     public function getAll( )

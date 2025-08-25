@@ -1,3 +1,12 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgendAki - Login</title>
+</head>
+<body>
+
 <link rel="stylesheet" href="/assets/styles/login.css">
 <link rel="stylesheet" href="/assets/styles/toast.css">
 <div id="toast-container"></div>
@@ -59,6 +68,7 @@
     </form>
 </section>
 
+<script src="/assets/script/agendaki.js.php"></script>
 <script src="/assets/script/mascara.js"></script>
 <script src="/assets/script/toast.js"></script>
 <script>
@@ -90,7 +100,7 @@
 
         const formData = new FormData( event.target );
 
-        fetch( "http://localhost:8000/api/auth/login", {
+        fetch( BASE_URL + "/api/auth/login", {
             method: "POST",
             body: formData
         })
@@ -116,7 +126,7 @@
         const formData = new FormData( event.target );
         formData.set( "telefone", desmascararTelefone( telefone ) );
 
-        fetch( "http://localhost:8000/api/auth/cadastrar", {
+        fetch( BASE_URL + "/api/auth/cadastrar", {
             method: 'post',
             body: formData,
         })
@@ -143,3 +153,6 @@
         });
     }
 </script>
+    
+</body>
+</html>

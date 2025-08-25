@@ -43,8 +43,8 @@ class AuthModel extends Model{
             }
 
             $payload = [
-                "iss" => "http://localhost:8000", // Emissor
-                "aud" => "http://localhost:8000", // Público
+                "iss" => $this->config['base_url'], // Emissor
+                "aud" => $this->config['base_url'], // Público
                 "iat" => time(),
                 "exp" => time() + 3600,
                 "data" => [

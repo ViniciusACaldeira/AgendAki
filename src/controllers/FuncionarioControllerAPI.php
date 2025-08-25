@@ -24,4 +24,23 @@ class FuncionarioControllerAPI extends Controller{
         else
             return $this->response( 400, "Não encontrado.");
     }
+
+    public function cadastrar( )
+    {
+        if( $this->isPOST( ) )
+        {
+            $nome = $this->getCampo( "nome" );
+            $telefone = $this->getCampo( "telefone" );
+            $email = $this->getCampo( "email" );
+            $senha = $this->getCampo( "senha" );
+            $senha_confirmar = $this->getCampo( "senha_confirmar" );
+
+            $funcionarioModel = new FuncionarioModel( );
+            $retorno = $funcionarioModel->cadastrarV1( $nome, $telefone, $email, $senha, $senha_confirmar );
+
+            return $this->responseRetorno( $retorno );
+        }
+        else
+            return $this->responseNaoEncontrado( );
+    }
 }
