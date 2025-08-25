@@ -231,28 +231,47 @@ class AgendaModel extends Model{
 
             if( !empty( array_diff( $servicos, $idBase ) ) )
                 $validacao->addErro( "Existem serviços inválidos." );
-        }
+            else
+            {
+                $qtd = count( $servicos );
 
-        $qtd = count( $servicos );
+                if( !$validacao->vazio( "servicos_inicio obrigatório", $servicos_inicio ) )
+                {
+                    $this->getParametros( $servicos_inicio );
 
-        if( !$validacao->vazio( "servicos_inicio obrigatório", $servicos_inicio ) )
-        {
-            $this->getParametros( $servicos_inicio );
+                    if( $qtd != count($servicos_inicio) )
+                        $validacao->addErro( "A quantidade de servicos_inicio, deve ser igual a de servicos." );
+                    else
+                        foreach( $servicos_inicio as $horario )
+                            if( $validacao->validaHorario( "Contém horário de Ínicio do serviço inválido.", $horario ) || $validacao->horarioEntre( $horario, $inicio, $fim ) )
+                                break;
+                }
 
-            if( $qtd != count($servicos_inicio) )
-                $validacao->addErro( "A quantidade de servicos_inicio, deve ser igual a de servicos." );
-        }
+                if( !$validacao->vazio( "servicos_fim obrigatório", $servicos_fim ) )
+                {
+                    $this->getParametros( $servicos_fim );
 
-        if( !$validacao->vazio( "servicos_fim obrigatório", $servicos_fim ) )
-        {
-            $this->getParametros( $servicos_fim );
+                    if( $qtd != count($servicos_fim) )
+                        $validacao->addErro( "A quantidade de servicos_fim, deve ser igual a de servicos." );
+                    else
+                        for( $i = 0; $i < $qtd; $i++ )
+                        {
+                            $horario = $servicos_fim[$i];
+                            
+                            if( $validacao->validaHorario( "Contém horário de Fim do serviço inválido.", $horario ) || $validacao->horarioEntre( $horario, $inicio, $fim ) )
+                                break;
+                            
+                            $horario_inicio = $servicos_inicio[$i];
+                            if( strtotime( $servicos_inicio[$i] ) > strtotime( $horario ) )
+                                $validacao->addErro( "O horário fim ($horario) não pode ser anterior ao horário início ($horario_inicio)" );
+                        }
+                }
 
-            if( $qtd != count($servicos_fim) )
-                $validacao->addErro( "A quantidade de servicos_fim, deve ser igual a de servicos." );
+            }
         }
         
         if( $validacao->temErro( ) )
-            return new Retorno( Retorno::ERRO_VALIDACAO, $validacao->getValidacao( ) );
+            return $validacao->retorno( );
 
         try
         {

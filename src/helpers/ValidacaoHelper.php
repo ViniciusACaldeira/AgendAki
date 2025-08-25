@@ -13,7 +13,24 @@ class ValidacaoHelper{
     public function validaHorario( $mensagem, $horario )
     {
         if( !preg_match("/^(?:[01]\d|2[0-3]):[0-5]\d$/", $horario) )
+        {
             $this->addErro( $mensagem );
+            return true;
+        }
+        
+        return false;
+    }
+
+    function horarioEntre($hora, $inicio, $fim) {
+        $str_hora   = strtotime($hora);
+        $str_inicio = strtotime($inicio);
+        $str_fim    = strtotime($fim);
+
+        if( $str_hora >= $str_inicio && $str_hora <= $str_fim )
+            return false;
+
+        $this->addErro( "$hora está fora do horário permitido: $inicio - $fim" );
+        return true;
     }
 
     public function nulo( $mensagem, $obj )

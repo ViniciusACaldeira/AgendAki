@@ -1,48 +1,109 @@
-<?php
-    use Vennizlab\Agendaki\helpers\Flash;
-    use Vennizlab\Agendaki\models\FuncionarioModel;
-
-    Flash::print( ); 
-?>
-
+<link rel="stylesheet" href="/assets/styles/cadastro.css">
+<link rel="stylesheet" href="/assets/styles/agenda/cadastro.css">
+<link rel="stylesheet" href="/assets/styles/toast.css">
 <a href="/agenda">Voltar</a>
 
-<form action="/agenda/cadastrar" method="POST">
-    <label for="funcionario_id_agenda">Funcionário</label>
-    <select name="funcionario_id_agenda" id="funcionario_id_agenda" onchange="onChangeFuncionario(this)">
-        <?php
-            $funcionarioModel = new FuncionarioModel( );
-            $funcionarios = $funcionarioModel->getAll();
+<div id="toast-container"></div>
+<section>
+    <h1>Cadastro</h1>
 
-            foreach( $funcionarios as $funcionario )
-                echo "<option value='".$funcionario['id']."'>".$funcionario['nome']."</option>";
-        ?>
-    </select>
+    <form id="form_cadastro_agenda" method="POST">
+        <label for="funcionario_id">Funcionário</label>
+        <select name="funcionario_id" id="funcionario_id"></select>
 
-    <label for="data_agenda">Data:</label>
-    <input type="date" id="data_agenda" name="data_agenda">
+        <div class="field">
+            <label for="data">Data:</label>
+            <input type="date" id="data" name="data">
+        </div>
+        
+        <div class="field-group row-group">
+            <div class="field">
+                <label for="inicio">Início:</label>
+                <input type="text" data-type="time" name="inicio" id="inicio">
+            </div>
+            <div class="field">
+                <label for="fim">Fim:</label>
+                <input type="text" data-type="time" name="fim" id="fim">
+            </div>
+        </div>
 
-    <label for="inicio_agenda">Início:</label>
-    <input type="time" name="inicio_agenda" id="inicio_agenda">
+        <section id="servicos" hidden>
+            <h4>Serviços</h4>
+        </section>
 
-    <label for="fim_agenda">Fim:</label>
-    <input type="time" name="fim_agenda" id="fim_agenda">
+        <button type="submit">Cadastrar</button>
+    </form>
+</section>
 
-    <section id="servicos">
-
-    </section>
-
-    <button type="submit">Cadastrar</button>
-</form>
-
+<script src="/assets/script/toast.js"></script>
+<script src="/assets/script/util.js"></script>
+<script src="/assets/script/mascara.js"></script>
+<script src="/assets/script/validador.js"></script>
+<script src="/assets/script/modal.js"></script>
 <script>
+    document.getElementById( "funcionario_id" ).addEventListener( "change", onChangeFuncionario );
     window.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('funcionario_id_agenda').dispatchEvent(new Event('change'));
+        document.querySelector( 'form' ).addEventListener( "submit", cadastrar );
+        coletarFuncionarios( );
     });
+
+    function cadastrar( e )
+    {
+        e.preventDefault( );
+        
+        const formData = new FormData( e.target );
+
+        fetch( BASE_URL + "/api/agenda/cadastrar", {
+            method: "post",
+            body: formData
+        })
+        .then( response => response.json( ) )
+        .then( response => {
+            const data = response["data"];
+            const status = response['status'];
+            const erros = data['erros'];
+
+            if( erros !== undefined )
+                erros.forEach( e => mostrarToast( e, TOAST_ERRO ) );
+            else if( status == 200 )
+                mostrarModal( );
+                
+        })
+        .catch( (error) => console.error(error) );
+    }
+
+    function coletarFuncionarios( )
+    {
+        const select = document.getElementById( "funcionario_id" );
+
+        fetch( BASE_URL + "/api/funcionario" )
+        .then( response => response.json( ) )
+        .then( response => {
+            const data = response['data'];
+            const status = response['status'];
+            const erros = data['erros'];
+
+            if( erros !== undefined )
+                erros.forEach( e => mostrarToast( e, TOAST_ERRO ) );
+            else if( status == 200 )
+            {
+                data.forEach( f => {
+                    const option = document.createElement( "option" );
+                    option.value = f.id;
+                    option.textContent = f.nome;
+
+                    select.appendChild( option );
+                });
+
+                select.dispatchEvent(new Event('change'));
+            }
+        })
+        .catch( (error) => { console.error(error) } );
+    }
 
     function onChangeFuncionario( event )
     {
-        let funcionario = event.value;
+        let funcionario = event.target.value;
         document.getElementById("servicos").innerText = "";
 
         fetch( BASE_URL + `/api/servico/funcionario?id=${funcionario}`)
@@ -58,50 +119,77 @@
     function montaServicos( servicos )
     {
         section = document.getElementById("servicos");
-
-        console.log(servicos);
+        section.hidden = false;
+        section.innerText = "";
+        
+        const h4 = document.createElement( "h4" );
+        h4.textContent = "Serviços";
+        h4.className = "center";
+        
+        section.appendChild( h4 );
 
         servicos.forEach((servico, index) => {
+            const divServico = document.createElement( "div" );
+            divServico.className = "field card";
+
+            const divCheckbox = document.createElement( "div" );
+            divCheckbox.className = "field checkbox-field";
 
             const label = document.createElement('label');
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
-            checkbox.name = 'servico[]';
+            checkbox.name = 'servicos[]';
             checkbox.value = servico['id'];
             checkbox.id = 'servico_' + servico['id'];
             checkbox.addEventListener('change', () => ajustaInputs(servico['id']));
 
             label.htmlFor = checkbox.id;
-            label.appendChild(checkbox);
-            label.appendChild(document.createTextNode(' ' + servico['nome']));
-            section.appendChild(label);
+            label.textContent = ` ${servico['nome']}`;
+            divCheckbox.appendChild( checkbox );
+            divCheckbox.appendChild( label );
+            divServico.appendChild(divCheckbox);
+
+            const divHorario = document.createElement( "div" );
+            divHorario.className = "field-group row-group";
+            
+            const divInicio = document.createElement( "div" );
+            divInicio.className = "field";
 
             const label_inicio = document.createElement('label');
             const inicio_input = document.createElement('input');
-            inicio_input.type = 'time';
+            inicio_input.type = 'text';
+            inicio_input.dataset.type = "time";
             inicio_input.name = 'servico_inicio[]';
             inicio_input.id = 'servico_inicio_' + servico['id'];
             inicio_input.disabled = true;
 
             label_inicio.htmlFor = inicio_input.id;
-            label_inicio.appendChild(document.createTextNode("Ínicio: "));
-            label_inicio.appendChild(inicio_input);
-            section.appendChild(label_inicio);
+            label_inicio.textContent = "Ínicio: ";
+            divInicio.appendChild( label_inicio );
+            divInicio.appendChild( inicio_input );
+
+            const divFim = document.createElement( "div" );
+            divFim.className = "field";
 
             const label_fim = document.createElement('label');
             const fim_input = document.createElement('input');
-            fim_input.type = 'time';
+            fim_input.type = 'text';
+            fim_input.dataset.type = "time";
             fim_input.name = 'servico_fim[]';
             fim_input.id = 'servico_fim_' + servico['id'];
             fim_input.disabled = true;
 
             label_fim.htmlFor = fim_input.id;
-            label_fim.appendChild(document.createTextNode("Fim: "));
-            label_fim.appendChild(fim_input);
-            section.appendChild(label_fim);
-            
-            section.appendChild(document.createElement('br'));
+            label_fim.textContent = "Fim: ";
+            divFim.appendChild(label_fim);
+            divFim.appendChild(fim_input);
+
+            divHorario.append( divInicio );
+            divHorario.append( divFim );
+            divServico.append( divHorario );
+            section.appendChild( divServico );
         });
+
     }
     
     function ajustaInputs( id )
@@ -116,4 +204,13 @@
         fim.disabled = !ativo;
     }
 
+    function limpaForm( )
+    {
+        document.querySelector( "#data" ).value = "";
+    }
+
+    function mostrarModal( )
+    {
+        modal_abrir( { titulo: "Cadastrar outro?", botoes: [ {texto: "Voltar a tela de início", acao: (modal) => { redireciona( "/agenda" ) } }, {texto: "Cadastrar outro", acao: (modal) => { limpaForm(); modal_fechar( ) }}]} )
+    }
 </script>

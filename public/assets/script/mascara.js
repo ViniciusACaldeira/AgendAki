@@ -33,3 +33,15 @@ function desmascararTelefone( telefone )
 {
     return telefone.replace(/\D/g, '' );
 }
+
+function mascararTempo( e )
+{
+    let valor = e.target.value.replace(/\D/g, "");
+
+    if( valor.length >= 3 )
+        valor = valor.replace( /^(\d{2})(\d{0,2}).*/, "$1:$2" );
+    else if( valor.length >= 1 )
+        valor = valor.replace( /^(\d{0,2})/, "$1" );
+
+    e.target.value = valor;
+}

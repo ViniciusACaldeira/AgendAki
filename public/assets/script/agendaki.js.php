@@ -9,9 +9,10 @@ const BASE_URL = "<?= $baseUrl ?>";
 const hamburger = document.getElementById('hamburger');
 const navMenu = document.getElementById('nav-menu');
 
-hamburger.addEventListener('click', () => {
-    navMenu.classList.toggle('show');
-});
+if( hamburger != null )
+    hamburger.addEventListener('click', () => {
+        navMenu.classList.toggle('show');
+    });
 
 document.querySelectorAll('#nav-menu li.has-submenu > a').forEach(link => {
     let tapped = false;
@@ -33,3 +34,19 @@ document.querySelectorAll('#nav-menu li.has-submenu > a').forEach(link => {
         }
     });
 });
+
+document.body.addEventListener("focus", function (e) {
+    if (e.target.matches('input[data-type="time"]')) {
+        aplicarMascaraTempo(e.target);
+    }
+}, true);
+
+function aplicarMascaraTempo( e )
+{   
+    if(e._mascaraAtiva) 
+        return;
+    
+    e._mascaraAtiva = true;
+    e.addEventListener( "input", mascararTempo );
+    e.addEventListener( "blur", completarTempo );
+}
