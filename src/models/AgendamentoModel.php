@@ -120,7 +120,7 @@ class AgendamentoModel extends Model
         }
 
         if( $validacao->temErro( ) )
-            return new Retorno( Retorno::ERRO_VALIDACAO, $validacao->getValidacao( ) );
+            return $validacao->retorno( );
         
         $stmt = $this->db->prepare( "SELECT hsv.valor 
                                     FROM agenda_servico sa

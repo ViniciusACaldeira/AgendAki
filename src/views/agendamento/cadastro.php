@@ -1,67 +1,145 @@
-<?php
-    use Vennizlab\Agendaki\helpers\Flash;
+<link rel="stylesheet" href="/assets/styles/toast.css">
+<link rel="stylesheet" href="/assets/styles/cadastro.css">
 
-    Flash::print( ); 
-?>
+<div id="toast-container"></div>
 
 <a href="/agendamento">Voltar</a>
 
-<form action="cadastrar" method="POST">
-    <label for="agenda_id">Selecione a agenda: </label>
-    <select name="agenda_id" id="agenda_id" onChange="getAgendaServico(this)">
-        <?php
-            use Vennizlab\Agendaki\models\AgendaModel;
-            use Vennizlab\Agendaki\models\UsuarioModel;
-
-            $agendaModel = new AgendaModel( );
-
-            $agendas = $agendaModel->getApartirDe( date('Y-m-d') );
-
-            foreach( $agendas as $agenda )
-                echo "<option value='".$agenda['id']."'>". $agenda['data']. " - " . $agenda['nome'] ."</option>";
-        ?>
-    </select>
-
-    <section id="usuarios">
-        <label for="usuario_id">Selecione o usuário: </label>
-        <select name="usuario_id" id="usuario_id">
-            <?php
-                $usuarioModel = new UsuarioModel();
-                $clientes = $usuarioModel->getAllCliente( );
-
-                foreach ($clientes as $cliente): 
-            ?>
-                    <?php $nome = htmlspecialchars($cliente['nome']);?>
-                    <option id="usuario_<?= $cliente['id']?>" value="<?= $cliente['id'] ?>" ><?= $nome ?> - <?= $cliente['telefone']?></option>
-                <?php endforeach;?>
-        </select>
-    </section>
-
-    <section id="servicos">
-
-    </section>
-
-    <section id="horarios">
+<section>
+    <h1>Cadastro</h1>
+    <form id="form_cadastro_agendamento" method="POST">
+        <div class="field">
+            <label for="agenda_id">Selecione a agenda:</label>
+            <select name="agenda_id" id="agenda_id"></select>
+        </div>
         
-    </section>
+        <div class="field">
+            <label for="usuario_id">Selecione o usuário: </label>
+            <select name="usuario_id" id="usuario_id"></select>
+        </div>
 
-    <label for="inicio">Informe o horário de início</label>
-    <input type="time" name="inicio" id="inicio">
+        <div class="field-group row-group">
+            <div id="servicos" class="field">
+                <label for="agenda_servico">Selecione o serviço:</label>
+                <select name="agenda_servico" id="agenda_servico"></select>
+            </div>
+            <div id="horarios" class="field">
+                <label for="intervalo">Selecione o horário:</label>
+                <select id="intervalo"></select>
+            </div>
+        </div>
 
-    
-    <button type="submit">Agendar</button>
-</form>
+        <div class="field">
+            <label for="inicio">Informe o horário de início:</label>
+            <input type="text" data-type="time" name="inicio" id="inicio">
+        </div>
+        
+        <button type="submit">Agendar</button>
+    </form>
+</section>
 
+<script src="/assets/script/util.js"></script>
+<script src="/assets/script/toast.js"></script>
+<script src="/assets/script/modal.js"></script>
+<script src="/assets/script/mascara.js"></script>
+<script src="/assets/script/validador.js"></script>
 <script>
+    document.getElementById( "agenda_id" ).addEventListener( "change", getAgendaServico );
+    document.querySelector( "form" ).addEventListener( "submit", cadastrar );
+    document.getElementById( "intervalo" ).addEventListener( "change", ( ) => {ajustaLimiteInput( )} );
+    document.getElementById( "agenda_servico" ).addEventListener( "change", ( ) => {montarHorarioDisponivel( )});
+
     window.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('agenda_id').dispatchEvent(new Event('change'));
+        coletarAgendas( );
+        coletarUsuarios( );
     });
+
+    function cadastrar( e )
+    {
+        e.preventDefault( );
+
+        const formData = new FormData( e.target );
+
+        fetch( BASE_URL + '/api/agendamento/cadastrar', {
+                method: 'post',
+                body: formData
+            }
+         )
+        .then( response => response.json( ) )
+        .then( response => {
+            const data = response['data'];
+            const status = response['status'];
+            const erros = data['erros'];
+
+            if( erros !== undefined )
+                erros.forEach( e => mostrarToast(e, TOAST_ERRO) );
+            else if( status == 200 )
+                mostrarModal( );
+        })
+        .catch( (error) => console.error(error) );
+    }
+
+    function coletarAgendas( )
+    {
+        fetch( BASE_URL + "/api/agenda" )
+        .then( response => response.json( ) )
+        .then( response => {
+            const data = response['data'];
+            const status = response['status'];
+            const erros = data['erros'];
+
+            if( erros !== undefined )
+                erros.forEach( e => mostrarToast(e, TOAST_ERRO) );
+            else if( status == 200 )
+            {
+                const select = document.getElementById( "agenda_id" );
+                select.innerHTML = "";
+
+                data.forEach( a => {
+                    const option = document.createElement( "option" );
+                    option.value = a['id'];
+                    option.textContent = `${formataData(a['data'])} - ${a['nome']}`;
+
+                    select.appendChild( option );
+                });
+
+                select.dispatchEvent( new Event('change') );
+            }
+        })
+        .catch( (error) => console.error( error ) );
+    }
+
+    function coletarUsuarios( )
+    {
+        fetch( BASE_URL + "/api/cliente" )
+        .then( response => response.json( ) )
+        .then( response => {
+            const data = response['data'];
+            const status = response['status'];
+            const erros = data['erros'];
+
+            if( erros !== undefined )
+                erros.forEach( e => mostrarToast(e, TOAST_ERRO) );
+            else if( status == 200 )
+            {
+                const select = document.getElementById( "usuario_id" );
+                select.innerHTML = "";
+
+                data.forEach( usuario => {
+                    const option = document.createElement( "option" );
+                    option.value = usuario.id;
+                    option.textContent = `${usuario['nome']} - ${formatarTelefone( usuario['telefone'] )}`;
+
+                    select.appendChild( option );
+                });
+            }
+        })
+        .catch( (error) => console.error( error ) );
+    }
 
     function getAgendaServico( event )
     {
-        const agenda_id = event.value;
-
-        document.getElementById("servicos").innerText = "";
+        const agenda_id = event.target.value;
 
         fetch(BASE_URL + `/api/agenda/servico?id=${agenda_id}`)
         .then( response => response.json() )
@@ -76,16 +154,8 @@
 
     function montaServicos( servicos )
     {
-        section = document.getElementById("servicos");
-
-        const label = document.createElement('label');
-        const select = document.createElement('select');
-        select.name = "servico_id";
-        select.id = "servico_id";
-        select.onchange = () => montarHorarioDisponivel( );
-
-        label.innerText = "Selecione o serviço: ";
-        label.htmlFor = select.id;
+        const select = document.getElementById( "agenda_servico" );
+        select.innerHTML = "";
 
         servicos.forEach((servico, index) => {
             const option = document.createElement('option');
@@ -94,29 +164,13 @@
 
             select.appendChild( option );
         });
-
-        label.appendChild(select);
-        section.appendChild(label);
     }
 
     function montarHorarioDisponivel( )
     {
-        servico = document.getElementById("servico_id").value;
-
-        section = document.getElementById("horarios");
-        section.innerText = "";
-
-        const label  = document.createElement('label');
-        const select = document.createElement('select');
-        select.id = "intervalo";
-        select.name = "intervalo";
-        select.onchange = () => ajustaLimiteInput( );
-
-        label.htmlFor = select.id;
-        label.innerText = "Selecione um período: ";
-
-        label.appendChild( select );
-        section.appendChild( label );
+        const servico = document.getElementById("agenda_servico").value;
+        const select = document.getElementById('intervalo');
+        select.innerHTML = "";
 
         fetch( BASE_URL + `/api/agendamento/servico/disponivel?id=${servico}` )
         .then( response => response.json() )
@@ -141,9 +195,23 @@
     function ajustaLimiteInput( )
     {
         const option = document.getElementById( `intervalo_${document.getElementById("intervalo").value}`);
+        if( option == null )
+            return;
+
         const input = document.getElementById( "inicio" ); 
         input.min = option.dataset.min;
         input.max = option.dataset.max;
     }
 
+    function limpaForm( )
+    {
+        document.querySelector( "#inicio" ).value = "";
+
+        montarHorarioDisponivel( );
+    }
+
+    function mostrarModal( )
+    {
+        modal_abrir( { titulo: "Cadastrar outro?", botoes: [ {texto: "Voltar a tela de início", acao: (modal) => { redireciona( "/agenda" ) } }, {texto: "Cadastrar outro", acao: (modal) => { limpaForm(); modal_fechar( ) }}]} )
+    }
 </script>
