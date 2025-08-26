@@ -38,10 +38,22 @@
 <script src="/assets/script/modal.js"></script>
 <script>
     document.getElementById( "funcionario_id" ).addEventListener( "change", onChangeFuncionario );
+    document.getElementById( "inicio" ).addEventListener( "change", (e) => ajustaTempo( e.target.value, true ) );
+    document.getElementById( "fim" ).addEventListener( "change", (e) => ajustaTempo( e.target.value, false ) );
+
     window.addEventListener('DOMContentLoaded', () => {
         document.querySelector( 'form' ).addEventListener( "submit", cadastrar );
         coletarFuncionarios( );
     });
+
+    function ajustaTempo( horario, inicio )
+    {
+        const horarios = document.querySelectorAll( `[id^='servico_${inicio ? "inicio" : "fim"}_']`);
+        horarios.forEach( h => {
+            h.value = horario;
+            completarTempo( h );
+        });
+    }
 
     function cadastrar( e )
     {
@@ -137,6 +149,7 @@
             checkbox.name = 'servicos[]';
             checkbox.value = servico['id'];
             checkbox.id = 'servico_' + servico['id'];
+            checkbox.checked = true;
             checkbox.addEventListener('change', () => ajustaInputs(servico['id']));
 
             label.htmlFor = checkbox.id;
@@ -157,7 +170,6 @@
             inicio_input.dataset.type = "time";
             inicio_input.name = 'servico_inicio[]';
             inicio_input.id = 'servico_inicio_' + servico['id'];
-            inicio_input.disabled = true;
 
             label_inicio.htmlFor = inicio_input.id;
             label_inicio.textContent = "Ínicio: ";
@@ -173,7 +185,6 @@
             fim_input.dataset.type = "time";
             fim_input.name = 'servico_fim[]';
             fim_input.id = 'servico_fim_' + servico['id'];
-            fim_input.disabled = true;
 
             label_fim.htmlFor = fim_input.id;
             label_fim.textContent = "Fim: ";
