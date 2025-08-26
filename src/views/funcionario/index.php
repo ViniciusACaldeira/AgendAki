@@ -1,7 +1,5 @@
-<link rel="stylesheet" href="/assets/styles/toast.css">
 <link rel="stylesheet" href="/assets/styles/tabela.css">
 
-<div id="toast-container"></div>
 
 <a href="/dashboard">voltar</a>
 
@@ -26,8 +24,6 @@
 </form>
 <table id="tabela_funcionarios"></table>
 
-<script src="/assets/script/mascara.js"></script>
-<script src="/assets/script/toast.js"></script>
 <script src="/assets/script/tabela.js"></script>
 <script>
     window.addEventListener('DOMContentLoaded', () => { montaTabela( ) });

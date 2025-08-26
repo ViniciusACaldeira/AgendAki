@@ -1,7 +1,4 @@
-<link rel="stylesheet" href="/assets/styles/toast.css">
 <link rel="stylesheet" href="/assets/styles/cadastro.css">
-
-<div id="toast-container"></div>
 
 <a href="/agendamento">Voltar</a>
 
@@ -38,11 +35,7 @@
     </form>
 </section>
 
-<script src="/assets/script/util.js"></script>
-<script src="/assets/script/toast.js"></script>
 <script src="/assets/script/modal.js"></script>
-<script src="/assets/script/mascara.js"></script>
-<script src="/assets/script/validador.js"></script>
 <script>
     document.getElementById( "agenda_id" ).addEventListener( "change", getAgendaServico );
     document.querySelector( "form" ).addEventListener( "submit", cadastrar );

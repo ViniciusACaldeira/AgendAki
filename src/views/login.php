@@ -69,7 +69,6 @@
 </section>
 
 <script src="/assets/script/agendaki.js.php"></script>
-<script src="/assets/script/mascara.js"></script>
 <script src="/assets/script/toast.js"></script>
 <script>
     const sessoes = ['login', 'cadastro'];

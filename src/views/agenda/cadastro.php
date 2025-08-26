@@ -1,9 +1,8 @@
 <link rel="stylesheet" href="/assets/styles/cadastro.css">
 <link rel="stylesheet" href="/assets/styles/agenda/cadastro.css">
-<link rel="stylesheet" href="/assets/styles/toast.css">
+
 <a href="/agenda">Voltar</a>
 
-<div id="toast-container"></div>
 <section>
     <h1>Cadastro</h1>
 
@@ -35,10 +34,7 @@
     </form>
 </section>
 
-<script src="/assets/script/toast.js"></script>
-<script src="/assets/script/util.js"></script>
-<script src="/assets/script/mascara.js"></script>
-<script src="/assets/script/validador.js"></script>
+
 <script src="/assets/script/modal.js"></script>
 <script>
     document.getElementById( "funcionario_id" ).addEventListener( "change", onChangeFuncionario );

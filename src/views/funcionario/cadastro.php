@@ -1,8 +1,4 @@
 <link rel="stylesheet" href="/assets/styles/cadastro.css">
-<link rel="stylesheet" href="/assets/styles/toast.css">
-<script src="/assets/script/toast.js"></script>
-
-<div id="toast-container"></div>
 
 <a href="/funcionario">Voltar</a>
 
@@ -44,7 +40,6 @@
 </section>
 
 <script src="/assets/script/util.js"></script>
-<script src="/assets/script/mascara.js"></script>
 <script src="/assets/script/modal.js"></script>
 <script>
     document.getElementById( "form_cadastro_funcionario" ).addEventListener( "submit", cadastrar );

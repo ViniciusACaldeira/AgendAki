@@ -1,5 +1,3 @@
-<link rel="stylesheet" href="/assets/styles/toast.css">
-<div id="toast-container"></div>
 
 <link rel="stylesheet" href="/assets/styles/servico/index.css">
 <a href="/dashboard">Voltar</a>
@@ -22,7 +20,6 @@
 
 </table>
 
-<script src="/assets/script/toast.js"></script>
 <script src="/assets/script/tabela.js"></script>
 <script>
     window.addEventListener('DOMContentLoaded', () => { listar( ) });

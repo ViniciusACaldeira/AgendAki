@@ -1,4 +1,3 @@
-<link rel="stylesheet" href="/assets/styles/toast.css">
 <style>
     input[readonly], textarea[readonly] 
     {
@@ -31,7 +30,6 @@
     }
 </style>
 
-<div id="toast-container"></div>
 
 <a href="/servico">Voltar</a>
 
@@ -61,8 +59,6 @@
     <button id="form_salvar" type="submit" hidden>Salvar</button>
 </form>
 
-<script src="/assets/script/util.js"></script>
-<script src="/assets/script/toast.js"></script>
 <script>
     const form = document.getElementById( "form" );
 

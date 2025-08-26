@@ -1,7 +1,4 @@
 <link rel="stylesheet" href="/assets/styles/cadastro.css">
-<link rel="stylesheet" href="/assets/styles/toast.css">
-
-<div id="toast-container"></div>
 
 <a href="/servico">Voltar</a>
 
@@ -28,8 +25,6 @@
     </form>
 </section>
 
-<script src="/assets/script/toast.js"></script>
-<script src="/assets/script/util.js"></script>
 <script src="/assets/script/modal.js"></script>
 <script>
     document.querySelector('form').addEventListener( 'submit', async (event) =>{
