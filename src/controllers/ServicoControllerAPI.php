@@ -19,9 +19,10 @@ class ServicoControllerAPI extends Controller
             $data = $this->getCampo( "data" );
             $preco_inicio = $this->getCampo( "preco_inicio", "00:00" );
             $preco_fim = $this->getCampo( "preco_fim", "23:59" );
+            $duracao = $this->getCampo( "duracao", "00:00" );
 
             $servicoModel = new ServicoModel( );
-            $retorno = $servicoModel->cadastrarV1( $nome, $descricao, $preco, $data, $preco_inicio, $preco_fim );
+            $retorno = $servicoModel->cadastrarV1( $nome, $descricao, $preco, $data, $preco_inicio, $preco_fim, $duracao );
 
             return $this->response( $retorno->getStatusHTTP( ), $retorno->getMensagem( ) );            
         }

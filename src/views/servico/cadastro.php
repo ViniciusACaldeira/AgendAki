@@ -21,6 +21,10 @@
             <input type="number" id="preco" name="preco" min="0.00" step="0.01">
         </div>
         
+        <div class="field">
+            <label for="duracao">Duração</label>
+            <input type="text" data-type="time" name="duracao" id="duracao">
+        </div>
         <button type="submit">Cadastrar</button>
     </form>
 </section>
@@ -53,7 +57,8 @@
     {
         document.querySelector( "#nome" ).value = "";
         document.querySelector( "#descricao" ).value = "";
-        document.querySelector( "#preco").value = "";
+        document.querySelector( "#preco" ).value = "";
+        document.querySelector( "#duracao" ).value = "";
     }
 
     function mostrarModal( )

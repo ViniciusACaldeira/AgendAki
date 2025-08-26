@@ -32,7 +32,7 @@ class ServicoModel extends Model{
             return ['erro' => "falha ao cadastrar o serviço $nome."];
     }
 
-    public function cadastrarV1( $nome, $descricao, $preco, $data, $preco_inicio, $preco_fim )
+    public function cadastrarV1( $nome, $descricao, $preco, $data, $preco_inicio, $preco_fim, $duracao )
     {
         $validacao = new ValidacaoHelper( );
         
@@ -45,8 +45,8 @@ class ServicoModel extends Model{
         if( $validacao->temErro( ) )
             return $validacao->retorno( );
 
-        $stmt = $this->db->prepare( "INSERT INTO servico (nome, descricao) VALUES (?,?)" );
-        $retorno = $stmt->execute( [$nome, $descricao] );
+        $stmt = $this->db->prepare( "INSERT INTO servico (nome, descricao, duracao) VALUES (?,?,?)" );
+        $retorno = $stmt->execute( [$nome, $descricao, $duracao] );
 
         if( $retorno )
         {
