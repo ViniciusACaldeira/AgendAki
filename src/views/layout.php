@@ -12,7 +12,6 @@
     <script src="/assets/script/mascara.js"></script>
     <script src="/assets/script/toast.js"></script>
     <script src="/assets/script/util.js"></script>
-    <script src="/assets/script/agendaki.js.php"></script>
 
     <div id="toast-container"></div>
     <?php
@@ -28,5 +27,6 @@
         <?= $conteudo ?>
     </main>
 
+    <script src="/assets/script/agendaki.js.php"></script>
 </body>
 </html>

@@ -77,8 +77,6 @@ class ServicoControllerAPI extends Controller
                 $validacao .= "Serviço(s) obrigatório.\n";
             else
             {
-                $servicos = json_decode($servicos);
-                
                 if( !is_array($servicos) )
                     $validacao .= "Serviço precisa ser um array.";
                 else
@@ -94,8 +92,6 @@ class ServicoControllerAPI extends Controller
                 $validacao .= "Duração obrigatório.\n";
             else
             {
-                $duracao = json_decode($duracao);
-
                 if( !is_array($duracao) )
                     $validacao .= "Duração precisa ser um array.";
                 else if( is_array($servicos) && count($duracao) != count($servicos) )

@@ -97,6 +97,12 @@ function formatarTelefone( telefone )
     return formatado;
 }
 
+function formatarTempo( tempo )
+{
+  const [hora, minuto] = tempo.split(":"); 
+  return `${hora}:${minuto}`;
+}
+
 function redireciona( url )
 {
   window.location = url;
