@@ -1,0 +1,97 @@
+:root {
+    --bg: #ffffff;
+    --card: #fff;
+    --text: #2f3640;
+    --muted: #8a8f99;
+    --primary: #4f46e5;
+    --primary-weak: #eef2ff;
+    --border: #e5e7eb;
+    --hover: #f3f4f6;
+    --danger: #ef4444;
+}
+
+.calendario{
+    .wrap { width: 100%; max-width: 860px; display: grid; gap: 16px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,.04); }
+
+    .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 12px; border-bottom: 1px solid var(--border); }
+    .toolbar .title { display:flex; align-items:center; gap:8px; font-weight: 600; }
+    .toolbar .spacer { flex: 1; }
+    .btn { border: 1px solid var(--border); background: #fff; padding: 8px 12px; border-radius: 12px; cursor: pointer; transition: .15s; width: auto; color: #2f3640; font-size: 1vh;}
+    .btn:hover { background: var(--hover); }
+    .btn.primary { border-color: transparent; background: var(--primary); color: #fff; }
+    .btn.ghost { background: transparent; }
+    .btn.danger { border-color: transparent; background: var(--danger); color: #fff; }
+    .seg {
+        display: grid; gap: 8px; padding: 12px;
+        grid-template-columns: repeat(7, 1fr);
+    }
+    .weekday { text-align:center; font-size: 12px; color: var(--muted); }
+
+    .grid { display: grid; gap: 8px; padding: 0 12px 12px; grid-template-columns: repeat(7, 1fr); }
+
+    .dia {
+        position: relative; border: 1px solid var(--border); border-radius: 12px; padding: 8px; min-height: 64px;
+        display: grid; align-content: start; gap: 6px; transition: .15s; background: #fff;
+        min-width: 0;
+        overflow: hidden;
+    }
+    .dia:hover { box-shadow: 0 2px 6px rgba(0,0,0,.06); }
+    .dia.disabled { opacity: .4; filter: grayscale(.2); pointer-events: none; }
+    .dia .top {
+        display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; color: var(--muted);
+    }
+    .selecionado { font-size: 11px; border-radius: 999px; background: var(--primary-weak); color: var(--primary); }
+    .hoje { outline: 2px dashed var(--primary); outline-offset: 2px; }
+
+    .check {
+        appearance: none; -webkit-appearance: none; width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 6px; display: grid; place-items: center; cursor: pointer; background: #fff;
+    }
+
+    .check:checked { border-color: var(--primary); background: var(--primary); }
+    .check:checked::after { content: ""; width: 8px; height: 8px; background: #fff; border-radius: 2px; }
+
+    .legend { display:flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 12px; border-top: 1px solid var(--border); color: var(--muted); }
+    .legend .dot { width: 10px; height: 10px; border-radius: 2px; display:inline-block; background: var(--primary-weak); border: 1px solid var(--primary); }
+
+    .panel { display: grid; gap: 8px; padding: 12px; }
+    .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
+    input{
+        padding: 0 !important;
+    }
+}
+
+
+@media (max-width: 680px) {
+    .calendario {
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr); /* sempre 7 colunas */
+            gap: 4px; /* reduzido */
+        }
+
+        .dia {
+            min-height: 40px;  /* altura menor */
+            font-size: 0.75rem; /* fonte mais compacta */
+            padding: 2px;       /* reduz o espaço interno */
+            
+        }
+
+        .seg {
+            gap: 4px; /* cabeçalhos de semana também mais juntos */
+            font-size: 0.7rem;
+        }
+
+        .selecionado{
+            font-size: clamp(0.0rem, 1.5vw, 0.75rem);
+        }
+
+        .check{
+            width: auto;
+            height: auto;
+            border: 3px solid var(--border);
+        }
+    }
+}
