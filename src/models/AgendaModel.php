@@ -211,7 +211,12 @@ class AgendaModel extends Model{
     {
         $validacao = new ValidacaoHelper( );
 
-        $validacao->data( "data obrigatória/inválida.", $data );
+        $this->getParametros( $data );
+
+        if( !$validacao->vazio( "Precisa informar uma data", $data ) )
+            foreach( $data as $dt )
+                $validacao->data( "Data inválida ($dt)", $dt );
+
         $validacao->validaHorario( "inicio obrigatório/invalido.", $inicio );
         $validacao->validaHorario( "fim obrigatório/invalido.", $fim );
 
@@ -277,44 +282,53 @@ class AgendaModel extends Model{
         {
             $this->db->beginTransaction( );
 
-            $query = new DatabaseHelper( );
-            $query->setSQL( "INSERT INTO agenda (funcionario_id, data, inicio, fim, tipo_agenda_id) VALUES (?,?,?,?,?)" );
-            $query->addParametro( [$funcionario_id, $data, $inicio, $fim, $tipo] );
+            $retorno = true;
 
-            $retorno = $query->execute( $this->db );
-
-            if( $retorno )
+            foreach( $data as $dt )
             {
-                $id = $this->db->lastInsertId( );
-
-                $parametros = "";
-                $parametros_valores = [];
-
-                for( $i = 0; $i < count( $servicos ); $i++ )
-                {
-                    $parametros .= "( ?, ?, ?, ? ),";
-                    $parametros_valores[] = $id;
-                    $parametros_valores[] = $servicos[$i];
-                    $parametros_valores[] = $servicos_inicio[$i];
-                    $parametros_valores[] = $servicos_fim[$i];
-                }
-
-                $parametros = rtrim( $parametros, "," );
-
+                if( !$retorno )
+                    break;
+                
                 $query = new DatabaseHelper( );
-                $query->setSQL( "INSERT INTO agenda_servico (agenda_id, servico_id, inicio, fim) VALUES $parametros" );
-                $query->addParametro( $parametros_valores );
+                $query->setSQL( "INSERT INTO agenda (funcionario_id, data, inicio, fim, tipo_agenda_id)" );
+                $query->addValues( "(?,?,?,?,?)" );
+                $query->addParametro( [$funcionario_id, $dt, $inicio, $fim, $tipo] );
 
                 $retorno = $query->execute( $this->db );
 
                 if( $retorno )
                 {
-                    $this->db->commit();
-                    return new Retorno( Retorno::SUCESSO, "Agenda cadastrada com sucesso." );
+                    $id = $this->db->lastInsertId( );
+
+                    $parametros = "";
+                    $parametros_valores = [];
+
+                    for( $i = 0; $i < count( $servicos ); $i++ )
+                    {
+                        $parametros .= "( ?, ?, ?, ? ),";
+                        $parametros_valores[] = $id;
+                        $parametros_valores[] = $servicos[$i];
+                        $parametros_valores[] = $servicos_inicio[$i];
+                        $parametros_valores[] = $servicos_fim[$i];
+                    }
+
+                    $parametros = rtrim( $parametros, "," );
+
+                    $query = new DatabaseHelper( );
+                    $query->setSQL( "INSERT INTO agenda_servico (agenda_id, servico_id, inicio, fim) VALUES $parametros" );
+                    $query->addParametro( $parametros_valores );
+
+                    $retorno = $query->execute( $this->db );
                 }
-                else
-                    $this->db->rollBack();
             }
+
+            if( $retorno )
+            {
+                $this->db->commit();
+                return new Retorno( Retorno::SUCESSO, "Agenda cadastrada com sucesso." );
+            }
+            else
+                $this->db->rollBack();
 
             return new Retorno( Retorno::ERRO, "Falha ao cadastrar a agenda." ); 
         }

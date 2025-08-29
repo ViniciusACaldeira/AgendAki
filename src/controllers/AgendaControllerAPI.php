@@ -56,7 +56,7 @@ class AgendaControllerAPI extends Controller{
         if( $this->isPOST( ) )
         {
             $funcionario = $this->getCampo( "funcionario_id" );
-            $data = $this->getCampo( "data" );
+            $data = $this->getCampo( "data", [] );
             $inicio = $this->getCampo( "inicio" );
             $fim = $this->getCampo( "fim" );
             $servicos = $this->getCampo( "servicos", [] );

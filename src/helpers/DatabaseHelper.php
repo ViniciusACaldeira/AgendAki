@@ -9,6 +9,7 @@ class DatabaseHelper{
     private array $where = [];
     private array $orderBy = [];
     private ?Paginacao $paginacao = null;
+    private array $values = [];
 
     public function setSQL( $sql )
     {
@@ -64,8 +65,15 @@ class DatabaseHelper{
     public function getSQL( )
     {
         $query = $this->sql;
+        $values = $this->values;
         $where = $this->where;
         $orderBy = $this->orderBy;
+
+        for( $i = 0; $i < count($values); $i++ )
+        {
+            $query .= $i == 0 ? " VALUES " : ", ";
+            $query .= $values[$i] . " "; 
+        }
 
         for( $i = 0; $i < count($where); $i++ )
         {
@@ -111,5 +119,11 @@ class DatabaseHelper{
 
             return $stmt;
         }
+    }
+
+    public function addValues( $values, int $qtd = 1 )
+    {
+        for( $i = 0; $i < $qtd; $i++ )
+            $this->values[] = $values;
     }
 }

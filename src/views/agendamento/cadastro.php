@@ -138,8 +138,8 @@
         .then( response => response.json() )
         .then( data => {
             montaServicos( data['data'] );
+            montarHorarioDisponivel( );
         })
-        .finally( () => montarHorarioDisponivel() )
         .catch( error => {
             console.error( "Erro na requisição: ", error );
         });
@@ -168,16 +168,21 @@
         fetch( BASE_URL + `/api/agendamento/servico/disponivel?id=${servico}` )
         .then( response => response.json() )
         .then( data => {
-            data['data'].forEach( (intervalo, index) => {
-                const option = document.createElement("option");
-                option.value = index;
-                option.dataset.min = intervalo['inicio'];
-                option.dataset.max = intervalo['fim'];
-                option.innerText = `Entre ${intervalo['inicio']} e ${intervalo['fim']}`;
-                option.id = `intervalo_${index}`;
+            const status = data['status'];
+            
+            if( status == 200 )
+                data['data'].forEach( (intervalo, index) => {
+                    const option = document.createElement("option");
+                    option.value = index;
+                    option.dataset.min = intervalo['inicio'];
+                    option.dataset.max = intervalo['fim'];
+                    option.innerText = `Entre ${intervalo['inicio']} e ${intervalo['fim']}`;
+                    option.id = `intervalo_${index}`;
 
-                select.appendChild( option );
-            });
+                    select.appendChild( option );
+                });
+            else
+                mostrarToast( "Falha ao consultar horários disponíveis.", TOAST_ERRO );
         })
         .finally( () => ajustaLimiteInput() )
         .catch( error => {

@@ -1,5 +1,6 @@
 <link rel="stylesheet" href="/assets/styles/cadastro.css">
 <link rel="stylesheet" href="/assets/styles/agenda/cadastro.css">
+<link rel="stylesheet" href="/assets/styles/calendario.css">
 
 <a href="/agenda">Voltar</a>
 
@@ -11,8 +12,7 @@
         <select name="funcionario_id" id="funcionario_id"></select>
 
         <div class="field">
-            <label for="data">Data:</label>
-            <input type="date" id="data" name="data">
+            <div class="calendario" id="calendario"></div>
         </div>
         
         <div class="field-group row-group">
@@ -36,7 +36,11 @@
 
 
 <script src="/assets/script/modal.js"></script>
+<script src="/assets/script/calendario.js"></script>
 <script>
+    const calendario = new Calendario( "calendario" );
+    calendario.render( );
+
     document.getElementById( "funcionario_id" ).addEventListener( "change", onChangeFuncionario );
     document.getElementById( "inicio" ).addEventListener( "change", (e) => ajustaTempo( e.target.value, true ) );
     document.getElementById( "fim" ).addEventListener( "change", (e) => ajustaTempo( e.target.value, false ) );
@@ -59,7 +63,9 @@
     {
         e.preventDefault( );
         
+        data = calendario.coletarDiasSelecionados( );
         const formData = new FormData( e.target );
+        formData.set( "data", Array.from(data) );
 
         fetch( BASE_URL + "/api/agenda/cadastrar", {
             method: "post",
@@ -196,7 +202,6 @@
             divServico.append( divHorario );
             section.appendChild( divServico );
         });
-
     }
     
     function ajustaInputs( id )
