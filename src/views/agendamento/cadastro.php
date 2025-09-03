@@ -26,7 +26,7 @@
             </div>
         </div>
 
-        <div class="field">
+        <div class="field" id="div_inicio" style="display: none;">
             <label for="inicio">Informe o horário de início:</label>
             <input type="text" data-type="time" name="inicio" id="inicio">
         </div>
@@ -167,20 +167,57 @@
 
         fetch( BASE_URL + `/api/agendamento/servico/disponivel?id=${servico}` )
         .then( response => response.json() )
-        .then( data => {
-            const status = data['status'];
-            
+        .then( response => {
+            const status = response['status'];
+            const data = response['data'];
+
+
             if( status == 200 )
-                data['data'].forEach( (intervalo, index) => {
+            {
+                const tipo = data['tipo'];
+
+                data['horarios'].forEach( (intervalo, index) => {
+                    const inicio = document.getElementById( "inicio" );
+
+                    let min, max, text;
+
+                    if( data['tipo'] == 1 )
+                    {
+                        min = intervalo['inicio'];
+                        max = intervalo['fim'];
+                        text = `Entre ${intervalo['inicio']} e ${intervalo['fim']}`;
+
+                        if( index == 0 )
+                            inicio.value = min;
+                    }
+                    else
+                    {
+                        if( !intervalo['disponivel'] )
+                            return;
+
+                        const hora = intervalo['hora'];
+                        min = hora;
+                        max = hora;
+                        text = `Horário das ${hora}`;
+
+                        if( index == 0 )
+                            inicio.value = hora;
+                    }
+                    
                     const option = document.createElement("option");
+
                     option.value = index;
-                    option.dataset.min = intervalo['inicio'];
-                    option.dataset.max = intervalo['fim'];
-                    option.innerText = `Entre ${intervalo['inicio']} e ${intervalo['fim']}`;
+                    option.dataset.min = min;
+                    option.dataset.max = max;
+                    option.textContent = text;
                     option.id = `intervalo_${index}`;
 
                     select.appendChild( option );
                 });
+
+                
+                document.getElementById( "div_inicio" ).style.display = tipo == 1 ? 'block' : 'none';
+            }
             else
                 mostrarToast( "Falha ao consultar horários disponíveis.", TOAST_ERRO );
         })
@@ -199,6 +236,7 @@
         const input = document.getElementById( "inicio" ); 
         input.min = option.dataset.min;
         input.max = option.dataset.max;
+        input.value = input.min;
     }
 
     function limpaForm( )

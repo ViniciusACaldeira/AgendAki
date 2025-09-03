@@ -63,11 +63,32 @@ class AgendaControllerAPI extends Controller{
             $servico_inicio = $this->getCampo( "servico_inicio", [] );
             $servico_fim = $this->getCampo( "servico_fim", [] );
             $tipo = $this->getCampo( "tipo", TipoAgenda::LIVRE );
+            $tamanho = $this->getCampo( "tamanho", "" );
+            $quantidade = $this->getCampo( "quantidade_fila" );
 
             $agendaModel = new AgendaModel( );
-            $retorno = $agendaModel->cadastrarV1($funcionario, $data, $inicio, $fim, $servicos, $servico_inicio, $servico_fim, $tipo);
+            $retorno = $agendaModel->cadastrarV1($funcionario, $data, $inicio, $fim, $servicos, $servico_inicio, $servico_fim, $tipo, $tamanho, $quantidade );
 
             $this->responseRetorno( $retorno );
+        }
+        else
+            return $this->responseNaoEncontrado( );
+    }
+
+    public function listarTipos( )
+    {
+        if( $this->isGET( ) )
+        {
+            $paginacao = $this->getPaginacao( );
+
+            $filtro = new FiltroHelper( $this );
+            
+            $filtro->add( "id" );
+            $filtro->add( "nome" );
+            
+            $agendaModel = new AgendaModel( );
+
+            return $this->responseRetorno( $agendaModel->getTipoAgenda( $filtro, $paginacao ) );
         }
         else
             return $this->responseNaoEncontrado( );

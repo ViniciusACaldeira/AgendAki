@@ -163,7 +163,7 @@ class AgendaModel extends Model{
     public function listar( FiltroHelper $filtro, ?Paginacao $paginacao = null )
     {
         $query = new DatabaseHelper( );
-        $query->setSQL( "SELECT a.id, u.nome, a.data, a.inicio, a.fim 
+        $query->setSQL( "SELECT a.id, u.nome, a.data, a.inicio, a.fim, a.tipo_agenda_id, a.tamanho, a.quantidade_fila 
                          FROM agenda a
                          INNER JOIN funcionario f ON f.id = a.funcionario_id
                          INNER JOIN usuario u ON u.id = f.usuario_id" );
@@ -182,6 +182,9 @@ class AgendaModel extends Model{
 
         if( $validacao->temErro( ) )
             return $validacao->retorno( );
+
+        if( $filtro->tem( "id" ) )
+            $query->addCondicao( "a.id = ?", $filtro->get( "id" ) );    
 
         if( $filtro->tem( "funcionario" ) )
         {
@@ -207,7 +210,7 @@ class AgendaModel extends Model{
         }
     }
 
-    public function cadastrarV1( $funcionario_id, $data, $inicio, $fim, $servicos, $servicos_inicio, $servicos_fim, $tipo = TipoAgenda::LIVRE )
+    public function cadastrarV1( $funcionario_id, $data, $inicio, $fim, $servicos, $servicos_inicio, $servicos_fim, $tipo = TipoAgenda::LIVRE, $tamanho, $quantidade_fila )
     {
         $validacao = new ValidacaoHelper( );
 
@@ -271,10 +274,12 @@ class AgendaModel extends Model{
                                 $validacao->addErro( "O horário fim ($horario) não pode ser anterior ao horário início ($horario_inicio)" );
                         }
                 }
-
             }
         }
         
+        if( $tipo == TipoAgenda::DIFERENCA_LIMITADA || $tipo == TipoAgenda::SLOT )
+            $validacao->validaHorario( "O tamanho ($tamanho) é inválido, esperasse um horário válido.", $tamanho);
+
         if( $validacao->temErro( ) )
             return $validacao->retorno( );
 
@@ -290,9 +295,9 @@ class AgendaModel extends Model{
                     break;
                 
                 $query = new DatabaseHelper( );
-                $query->setSQL( "INSERT INTO agenda (funcionario_id, data, inicio, fim, tipo_agenda_id)" );
-                $query->addValues( "(?,?,?,?,?)" );
-                $query->addParametro( [$funcionario_id, $dt, $inicio, $fim, $tipo] );
+                $query->setSQL( "INSERT INTO agenda (funcionario_id, data, inicio, fim, tipo_agenda_id, tamanho, quantidade_fila)" );
+                $query->addValues( "(?,?,?,?,?,?,?)" );
+                $query->addParametro( [$funcionario_id, $dt, $inicio, $fim, $tipo, $tamanho, $quantidade_fila] );
 
                 $retorno = $query->execute( $this->db );
 
@@ -337,5 +342,33 @@ class AgendaModel extends Model{
             $this->db->rollBack();
             return new Retorno( Retorno::ERRO, "Falha ao cadastrar a agenda: ", $e->getMessage( ) );
         }
+    }
+
+    public function getTipoAgenda( FiltroHelper $filtro, Paginacao $paginacao )
+    {
+        $query = new DatabaseHelper( );
+        $query->setSQL( "SELECT * FROM tipo_agenda" );
+        $query->setPaginacao( $paginacao );
+
+        if( $filtro->tem( "id" ) )
+            $query->addCondicao( "id = ?", $filtro->get( "id" ) );
+
+        if( $filtro->tem( "nome" ) )
+            $query->addCondicao( "nome LIKE ? ", "%".$filtro->get( "nome" )."%" );
+
+        try
+        {
+            $retorno = $query->execute( $this->db );
+
+            if( $retorno )
+                return new Retorno( Retorno::SUCESSO, $retorno->fetchAll( PDO::FETCH_ASSOC ) );
+            else
+                return new Retorno( Retorno::ERRO, "Falha ao consultar os Tipos de Agenda." );    
+        }
+        catch( Exception $e )
+        {
+            return new Retorno( Retorno::ERRO, "Falha ao consultar os Tipos de Agenda: ", $e->getMessage( ) );    
+        }
+        
     }
 }

@@ -30,6 +30,40 @@
             <h4>Serviços</h4>
         </section>
 
+        <section id="configuracao">
+            <h2>Configuração Agenda</h2>
+
+            <div class="field">
+
+                <div class="field-group row-group">
+                    <div class="field">
+                        <label for="tipo">Selecione o tipo de agenda</label>
+                        <select name="tipo" id="tipo">
+                            
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="tamanho" data-tooltip="Para SLOT será o tamanho de cada grupo, por exemplo 00:30, cada grupo será composto por 30 minutos, 08:00, 08:30, 09:00...
+                        Para DIFERENCA_LIMITADA será a diferença máxima livre que pode ter entre um serviço e outro, se um serviço que demora 30 minutos começou as 08:00 o próximo pode apenas selecionar das 08:30 a 08:40">
+                        Tamanho da agenda</label>
+                        <input type="text" data-type="time" name="tamanho" id="tamanho">
+                    </div>
+                </div>
+                
+                <div class="field-group row-group">
+                    <div class="field checkbox-field">
+                        <input type="checkbox" name="fila_espera" id="fila_espera">
+                        <label for="fila_espera">Fila de espera</label>
+                    </div>
+
+                    <div class="field">
+                        <label for="quantidade_fila">Quantidade na fila</label>
+                        <input type="number" name="quantidade_fila" id="quantidade_fila" min="0">
+                    </div>
+                </div>
+            </div>
+        </section>
         <button type="submit">Cadastrar</button>
     </form>
 </section>
@@ -48,7 +82,35 @@
     window.addEventListener('DOMContentLoaded', () => {
         document.querySelector( 'form' ).addEventListener( "submit", cadastrar );
         coletarFuncionarios( );
+        coletarTipoAgenda( );
     });
+
+    function coletarTipoAgenda( )
+    {
+        const select = document.getElementById( "tipo" );
+
+        fetch( BASE_URL + "/api/agenda/tipo" )
+        .then( response => response.json( ) )
+        .then( response => {
+            const data = response['data'];
+            const erros = response['erros'];
+            const status = response['status'];
+
+            if( erros != undefined )
+                erros.forEach( e => mostrarToast( e, TOAST_ERRO ) );
+
+            if( status == 200 )
+            {
+                data.forEach( t => {
+                    const option = document.createElement( "option" );
+                    option.value = t.id;
+                    option.textContent = t.nome;
+
+                    select.appendChild( option );
+                });
+            }
+        })
+    }
 
     function ajustaTempo( horario, inicio )
     {
@@ -202,6 +264,9 @@
             divServico.append( divHorario );
             section.appendChild( divServico );
         });
+
+        document.getElementById( "inicio" ).dispatchEvent( new Event("change") );
+        document.getElementById( "fim" ).dispatchEvent( new Event("change") );
     }
     
     function ajustaInputs( id )
@@ -218,7 +283,6 @@
 
     function limpaForm( )
     {
-        document.querySelector( "#data" ).value = "";
     }
 
     function mostrarModal( )

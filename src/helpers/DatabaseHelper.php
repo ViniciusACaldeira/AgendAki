@@ -36,7 +36,7 @@ class DatabaseHelper{
         $this->addParametro( $parametro );
     }
 
-    public function setPaginacao( Paginacao $paginacao )
+    public function setPaginacao( ?Paginacao $paginacao )
     {
         if( $paginacao == null )
             $this->paginacao = new Paginacao( );

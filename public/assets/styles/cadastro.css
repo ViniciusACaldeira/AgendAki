@@ -14,6 +14,7 @@ main form[id^="form_cadastro_"] .field {
     margin-bottom: 18px;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
 }
 
 main form[id^="form_cadastro_"] .field-group {
@@ -158,3 +159,19 @@ main form[id^="form_cadastro_"] .field.checkbox-field {
     }
 }
 
+
+
+[data-tooltip] { position: relative; }
+[data-tooltip]::after {
+content: attr(data-tooltip);
+position: absolute; left: 0; top: calc(100% + 8px);
+padding: .5rem .7rem; background: #111827; color: #fff;
+border-radius: .5rem; font: 12px/1.4 sans-serif; white-space: nowrap;
+opacity: 0; transform: translateY(-6px); pointer-events: none;
+transition: opacity .15s, transform .15s;
+white-space: pre-line;
+}
+[data-tooltip]:hover::after,
+[data-tooltip]:focus::after {
+opacity: 1; transform: translateY(0);
+}

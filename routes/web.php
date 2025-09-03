@@ -51,7 +51,8 @@ return [
     '/api/agenda' => [AgendaControllerAPI::class, "listar"],
     '/api/agenda/servico' => [AgendaControllerAPI::class, 'getServicos'],
     '/api/agenda/cadastrar' => [AgendaControllerAPI::class, "cadastrar"],
-
+    '/api/agenda/tipo' => [AgendaControllerAPI::class, 'listarTipos'],
+    
     '/api/agendamento/servico/disponivel' => [AgendamentoControllerAPI::class, 'servicosDisponiveis'],
     '/api/agendamento' => [AgendamentoControllerAPI::class, 'listar'],
     '/api/agendamento/cadastrar' => [AgendamentoControllerAPI::class, 'cadastrar'],

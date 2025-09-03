@@ -10,7 +10,9 @@ use Vennizlab\Agendaki\core\Retorno;
 use Vennizlab\Agendaki\helpers\DatabaseHelper;
 use Vennizlab\Agendaki\helpers\FiltroHelper;
 use Vennizlab\Agendaki\helpers\Paginacao;
+use Vennizlab\Agendaki\helpers\TipoAgenda;
 use Vennizlab\Agendaki\helpers\ValidacaoHelper;
+use Vennizlab\Agendaki\models\TipoAgenda\TipoAgendaFactory;
 
 class AgendamentoModel extends Model
 {
@@ -85,37 +87,33 @@ class AgendamentoModel extends Model
             $agenda = $this->getByID( $agenda_servico );
             if( !$validacao->vazio( "-agenda_servico não encontrado.", $agenda ) ) 
             {
+                $agendaModel = new AgendaModel( );
+                $filtro = new FiltroHelper( $this );
+                $filtro->addFiltro( "id", $agenda['agenda_id'] );
+                $retAgenda = $agendaModel->listar( $filtro );
+                
+                if( $retAgenda->is( Retorno::SUCESSO ) )
+                {
+                    $horarios = $this->getHorariosDisponiveisServicoAgenda( $agenda_servico );
+                    
+                    if( $horarios->is(Retorno::SUCESSO))
+                    {
+                        $tipoAgenda = TipoAgendaFactory::build( $retAgenda->getMensagem( )[0]['tipo_agenda_id'] );
+                        if( !$tipoAgenda->valida( $inicio, $horarios->getMensagem( )['horarios'] ) )
+                            $validacao->addErro( "- Horário de início inválido.");
+                    }
+                    else
+                        $validacao->addErro( $horarios->getMensagem( ) );
+                }
+                else
+                    $validacao->addErro( $retAgenda->getMensagem( ) );
+             
                 $fim = new DateTime($inicio);
                 $duracao = $agenda['duracao'];
                 list($h, $m, $s) = explode(':', $duracao);
                 $duracaoInterval = new DateInterval("PT{$h}H{$m}M");
                 $fim->add($duracaoInterval);
                 $fim = $fim->format("H:i");
-
-                $horarios = $this->getHorariosDisponiveisServicoAgenda( $agenda_servico );
-
-                if( $horarios->is(Retorno::SUCESSO))
-                {
-                    $horarioValido = false;
-                    $inicioTime = new DateTime( $inicio );
-
-                    foreach( $horarios->getMensagem() as $horario)
-                    {
-                        $inicioIntervalo = new DateTime( $horario['inicio'] );
-                        $fimIntervalo = new DateTime( $horario['fim'] );
-
-                        if( $inicioTime >= $inicioIntervalo && $inicioTime <= $fimIntervalo )
-                        {
-                            $horarioValido = true;
-                            break;
-                        }
-                    }
-
-                    if( !$horarioValido )
-                        $validacao->addErro( "- Horário de início inválido.");
-                }
-                else
-                    $validacao->addErro( $horarios->getMensagem( ) );
             }
         }
 
@@ -297,7 +295,6 @@ class AgendamentoModel extends Model
         {
             return new Retorno( Retorno::ERRO, "Falha ao coletar agendamentos: ", $e->getMessage( ) );
         }
-        
     }
 
     public function getHorariosDisponiveisServicoAgenda( $id )
@@ -310,61 +307,27 @@ class AgendamentoModel extends Model
         if( !$agenda_servico )
             return new Retorno( Retorno::ERRO, '- Agenda de serviço não encontrada.');
 
+        $agendaModel = new AgendaModel( );
+
+        $filtro = new FiltroHelper( $this );
+        $filtro->addFiltro( "id", $agenda_servico['agenda_id'] );
+
+        $agenda = $agendaModel->listar( $filtro );
+
+        if( $agenda->is( Retorno::SUCESSO ) )
+            $agenda = $agenda->getMensagem( )[0];
+        else
+            return $agenda;
+
         $agendamentos = $this->getByAgenda( $agenda_servico['agenda_id'] );
         
-        $inicio = $agenda_servico['inicio'];
-        $fim = $agenda_servico['fim'];
-        $duracao = $agenda_servico['duracao'];
+        $tipoAgenda = TipoAgendaFactory::build( $agenda['tipo_agenda_id'] );
+        $tipoAgenda->setAgenda( $agenda );
+        $tipoAgenda->setAgendamentos( $agendamentos );
+        $tipoAgenda->setAgendaServico( $agenda_servico );
 
-        $inicio = new DateTime($agenda_servico['inicio']);
-        $fim = new DateTime($agenda_servico['fim']);
-        $duracao = $agenda_servico['duracao'] ?? "00:00:00";
+        $intervalosDisponiveis = $tipoAgenda->coletaHorarioDisponivel( );
 
-        $duracaoInterval = new DateInterval('PT' . (new DateTime($duracao))->format('H') . 'H' . (new DateTime($duracao))->format('i') . 'M');
-        $duracaoSegundos = ($duracaoInterval->h * 3600) + ($duracaoInterval->i * 60) + $duracaoInterval->s;
-
-        $intervalosDisponiveis = [];
-
-        usort($agendamentos, function ($a, $b) {
-            return strtotime($a['inicio']) - strtotime($b['inicio']);
-        });
-
-        $ultimoFim = clone $inicio;
-
-        foreach ($agendamentos as $agendamento) {
-            $inicioAgendamento = new DateTime($agendamento['inicio']);
-            $fimAgendamento = new DateTime($agendamento['fim']);
-
-            $limiteInicio = (clone $inicioAgendamento)->sub($duracaoInterval);
-
-            if ($limiteInicio > $ultimoFim) {
-                $intervaloSegundos = $limiteInicio->getTimestamp() - $ultimoFim->getTimestamp();
-
-                if ($intervaloSegundos >= $duracaoSegundos) {
-                    $intervalosDisponiveis[] = [
-                        'inicio' => $ultimoFim->format('H:i'),
-                        'fim'    => $limiteInicio->format('H:i'),
-                    ];
-                }
-            }
-
-            if ($fimAgendamento > $ultimoFim) {
-                $ultimoFim = $fimAgendamento;
-            }
-        }
-
-        if ($ultimoFim < $fim) {
-            $intervaloFinalSegundos = $fim->getTimestamp() - $ultimoFim->getTimestamp();
-
-            if ($intervaloFinalSegundos >= $duracaoSegundos) {
-                $intervalosDisponiveis[] = [
-                    'inicio' => $ultimoFim->format('H:i'),
-                    'fim'    => $fim->format('H:i'),
-                ];
-            }
-        }
-
-        return new Retorno( Retorno::SUCESSO, $intervalosDisponiveis );
+        return new Retorno( Retorno::SUCESSO, [ "tipo" => $agenda['tipo_agenda_id'], "horarios" => $intervalosDisponiveis ] );
     }
-
 }

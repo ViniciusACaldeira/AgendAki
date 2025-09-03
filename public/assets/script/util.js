@@ -65,8 +65,10 @@ function formataData( data )
   if( data === null )
     return "00/00/0000";
 
-  const date = new Date( data );  
-  return date.toLocaleDateString( "pt-BR" );
+  let [ano, mes, dia] = data.split("-");
+
+  const date = new Date( ano, mes-1, dia );  
+  return date.toLocaleDateString( "pt-BR", { timeZone: "America/Sao_Paulo" });
 }
 
 function formatarTelefone( telefone )
