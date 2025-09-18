@@ -267,12 +267,20 @@ class AgendamentoModel extends Model
             $query->addCondicao( "a.usuario_id IN ($parametros)", $clientes );
         }
             
+        if( $filtro->tem( "apartir", true ) )
+        {
+            $apartir = $filtro->get( "apartir" );
+
+            if( !$validacao->data( "apartir inválido.", $apartir ) )
+                $query->addCondicao( "ag.data >= ?",  $apartir );
+        }
+        
         if( $validacao->temErro( ) )
             return $validacao->retorno( );
 
         
         $query->setSQL( "SELECT sa.id, uf.Nome 'nome_funcionario', u.Nome 'nome_cliente', u.Telefone 'telefone', ag.data 'data', a.inicio 'inicio_agendamento', a.fim 'fim_agendamento',
-                        s.nome 'nome_servico', CONCAT(CONCAT(a.inicio, ' - '), a.fim) 'horario' 
+                        s.nome 'nome_servico', CONCAT(CONCAT(a.inicio, ' - '), a.fim) 'horario', a.valor 'valor'
                         FROM agendamento a
                         INNER JOIN agenda_servico sa ON sa.id = a.agenda_servico_id
                         INNER JOIN agenda ag ON ag.id = sa.agenda_id
@@ -280,7 +288,15 @@ class AgendamentoModel extends Model
                         INNER JOIN usuario u ON u.id = a.usuario_id
                         INNER JOIN funcionario f ON f.id = ag.funcionario_id
                         INNER JOIN usuario uf ON uf.id = f.usuario_id" );
-        $query->addOrderBy( "ag.data DESC, a.inicio, a.fim" );
+
+        if( $filtro->tem( "ORDERBY" ) )
+        {
+            $orderby = $filtro->get( "ORDERBY" );
+
+            $query->addOrderBy( "ag.Data $orderby, a.inicio, a.fim" );
+        }
+        else
+            $query->addOrderBy( "ag.data DESC, a.inicio, a.fim" );
 
         try
         {

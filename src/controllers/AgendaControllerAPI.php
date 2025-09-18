@@ -2,6 +2,7 @@
 
 namespace Vennizlab\Agendaki\controllers;
 
+use Vennizlab\Agendaki\core\Auth;
 use Vennizlab\Agendaki\core\Controller;
 use Vennizlab\Agendaki\helpers\FiltroHelper;
 use Vennizlab\Agendaki\helpers\TipoAgenda;
@@ -43,6 +44,8 @@ class AgendaControllerAPI extends Controller{
             $filtro = new FiltroHelper( $this );
             $filtro->add( "data" );
             $filtro->add( "funcionario" );
+            $filtro->add( "servico" );
+            
             $agendaModel = new AgendaModel( );
 
             return $this->responseRetorno( $agendaModel->listar( $filtro, $paginacao ) );

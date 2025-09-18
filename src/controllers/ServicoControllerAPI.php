@@ -1,6 +1,7 @@
 <?php
 namespace Vennizlab\Agendaki\controllers;
 
+use Vennizlab\Agendaki\core\Auth;
 use Vennizlab\Agendaki\core\Controller;
 use Vennizlab\Agendaki\core\Retorno;
 use Vennizlab\Agendaki\helpers\FiltroHelper;
@@ -133,7 +134,11 @@ class ServicoControllerAPI extends Controller
 
             $filtro = new FiltroHelper( $this );
             $filtro->add( "id" );
-            $filtro->add( "inativo" );
+
+            if( Auth::isFuncionario( ) )
+                $filtro->add( "inativo" );
+            else
+                $filtro->addFiltro( "inativo", false );
 
             $paginacao = $this->getPaginacao( );
             $retorno = $servicoModel->getPaginado( $filtro, $paginacao );

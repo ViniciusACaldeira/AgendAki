@@ -16,6 +16,7 @@ class FuncionarioControllerAPI extends Controller{
             $filtro->add( "nome" );
             $filtro->add( "email" );
             $filtro->add( "telefone" );
+            $filtro->add( "servico" );
 
             $funcionarioModel = new FuncionarioModel( );
             $paginacao = $this->getPaginacao( );

@@ -7,7 +7,7 @@ use Vennizlab\Agendaki\core\Middleware;
 
 class FuncionarioMiddleware implements Middleware
 {
-    private $rotas_liberadas = [""];
+    private $rotas_liberadas = ["","/api/agendamento","/api/servico", "/api/funcionario", "/api/agenda", "/api/agendamento/servico/disponivel", "/api/agendamento/cadastrar"];
     private $isAPI = true;
     private $url;
 

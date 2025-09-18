@@ -16,12 +16,14 @@ class Calendario{
         this.calendario = document.getElementById( this.id );
         this.diasSelecionados = new Set( );
         this.diasInvalidos = new Set( );
+        this.diasValidos = new Set( );
         this.semana = Calendario.TipoSemana.DOMINGO;
         this.mes = this.primeiroDiaMes( new Date( ) );
         this.dataMinima = null;
         this.dataMaxima = null;
         this.acoesSelecionar = [];
         this.permiteMultiplasDatas = permiteMultiplasDatas !== undefined ? permiteMultiplasDatas : true;
+        this.validarDiaValidoVazio = false;
         this.build( );
     }
 
@@ -32,7 +34,7 @@ class Calendario{
 
     setDataMinima( data )
     {
-        this.dataMaxima = data;
+        this.dataMinima = data;
     }
 
     setDataMaxima( data )
@@ -42,7 +44,18 @@ class Calendario{
 
     setDiasSelecionados( dias )
     {
-        dias.forEach( d => { this.diasSelecionados.push( d ) } );
+        dias.forEach( d => { this.diasSelecionados.add( d ) } );
+    }
+
+    setDiasValidos( dias )
+    {
+        this.diasValidos.clear( );
+        dias.forEach( d => { this.diasValidos.add( d ) } );
+    }
+
+    setValidaDiasValidosVazio( validar )
+    {
+        this.validarDiaValidoVazio = validar;
     }
 
     coletarDiasSelecionados( )
@@ -52,7 +65,7 @@ class Calendario{
 
     setDiasInvalidos( dias )
     {
-        dias.forEach( d => {this.diasInvalidos.push(d) } );
+        dias.forEach( d => {this.diasInvalidos.add( d ) } );
     }
 
     coletarDiasInvalidos( )
@@ -108,6 +121,12 @@ class Calendario{
         acoes.forEach( a => this.acoesSelecionar.push(a) );
     }
 
+    setAcoesAoSelecionar( acoes )
+    {
+        this.acoesSelecionar = [];
+        this.addAcoesAoSelecionar( acoes );
+    }
+
     toISO( data )
     {
         return [data.getFullYear(), String(data.getMonth()+1).padStart(2,'0'), String(data.getDate()).padStart(2,'0')].join('-');
@@ -116,6 +135,11 @@ class Calendario{
     addMes( data, quantidade )
     {
         return new Date( data.getFullYear( ), data.getMonth( ) + quantidade, 1 );
+    }
+
+    limpar( )
+    {
+        this.diasSelecionados.clear( );
     }
 
     alterarMes( tipo )
@@ -199,7 +223,7 @@ class Calendario{
                 if( !data )
                     return;
                 
-                if( this.diasInvalidos.has( data ) )
+                if( this.diasInvalidos.has( data ) || !this.validarDiaValido( data ) )
                     return;
 
                 if( this.diasSelecionados.has( data ) )
@@ -236,7 +260,7 @@ class Calendario{
 
                         const iso = this.toISO( d );
                         
-                        if( this.diasInvalidos.has( iso ) || !this.dataValida( d ) )
+                        if( this.diasInvalidos.has( iso ) || !this.dataValida( d ) || !this.validarDiaValido( iso ) )
                             return;
 
                         const dia = d.getDay( );
@@ -253,6 +277,16 @@ class Calendario{
                 return;
             }
         });
+    }
+
+    validarDiaValido( d )
+    {
+        if( this.diasValidos.size > 0 )
+            return this.diasValidos.has( d );
+        else if( this.validarDiaValidoVazio )
+            return false;
+        
+        return true;
     }
 
     render( )
@@ -277,7 +311,7 @@ class Calendario{
                 return `<div></div>`;
             
             const iso = this.toISO( d );
-            const desabilitado = this.diasInvalidos.has( iso ) || !this.dataValida( d );
+            const desabilitado = this.diasInvalidos.has( iso ) || !this.dataValida( d ) || !this.validarDiaValido( iso );
             const checked = this.diasSelecionados.has( iso );
             const eHoje = hoje === iso;
 

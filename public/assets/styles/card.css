@@ -1,0 +1,174 @@
+.card-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.card-list-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.card .header {
+    background: #f3f4f6;
+    padding: 1rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.card .body {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 1rem;
+    color: #444;
+}
+
+.card .body span {
+    display: block;
+}
+
+.card .footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: space-between;
+    padding: 1rem;
+    background: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+}
+
+.card button {
+    flex: 1;
+    padding: 0.7rem 1rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.card button.primary {
+    background: #4f46e5;
+    color: white;
+}
+.card button.primary:hover {
+    background: #4338ca;
+    transform: scale(1.03);
+}
+
+.card button.danger {
+    background: #ef4444;
+    color: white;
+}
+.card button.danger:hover {
+    background: #dc2626;
+    transform: scale(1.03);
+}
+
+.card button.small {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+    border-radius: 8px;
+}
+
+.card.compact .header {
+    padding: 0.6rem;
+    font-size: 1rem;
+}
+
+.card.compact .body {
+    flex: 1;
+    padding: 0.6rem;
+    font-size: 0.9rem;
+}
+
+.card.compact .footer {
+    padding: 0.6rem;
+}
+
+.card.compact .footer button {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.card-list-horizontal {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding: 1rem;
+    scroll-snap-type: x mandatory;
+}
+
+.card-list-horizontal .card {
+    flex: 0 0 280px;
+    scroll-snap-align: start;
+}
+
+.card.empty {
+    text-align: center;
+    color: #6b7280;
+    font-style: italic;
+    background: #f9fafb;
+}
+.card.empty .body {
+    padding: 2rem;
+    font-size: 1rem;
+}
+
+@media (max-width: 600px) {
+    .card {
+        border-radius: 12px;
+        font-size: 0.9rem;
+    }
+
+    .card .header {
+        font-size: 1rem;
+        padding: 0.8rem;
+    }
+
+    .card .body {
+        padding: 0.8rem;
+    }
+
+    .card .footer {
+        flex-direction: column;
+    }
+
+    .card .footer button {
+        width: 100%;
+        margin: 0;
+    }
+
+    .card-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+    .card-list {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    }
+}

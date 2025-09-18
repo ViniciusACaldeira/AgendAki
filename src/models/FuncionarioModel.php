@@ -97,8 +97,20 @@ class FuncionarioModel extends Model{
     public function listar( FiltroHelper $filtro, ?Paginacao $paginacao = null )
     {
         $query = new DatabaseHelper( );
+        $joinServico = "LEFT";
+
+        if( $filtro->tem( "servico" ) )
+        {
+            $joinServico = "INNER";
+            $servicos = $filtro->get( "servico" );
+
+            $parametros = $this->getParametros( $servicos ); 
+            $query->addCondicao( "fs.servico_id in ($parametros)",  $servicos );
+        }
+
         $query->setSQL( "SELECT f.id, u.nome, u.telefone, u.email 
-                         FROM funcionario f 
+                         FROM funcionario f
+                         $joinServico JOIN funcionario_servico fs ON fs.funcionario_id = f.id
                          INNER JOIN usuario u ON u.id = f.usuario_id" );
 
         $query->setPaginacao( $paginacao );
@@ -125,6 +137,8 @@ class FuncionarioModel extends Model{
             if( !empty( $telefone ) )
                 $query->addCondicao( "u.telefone LIKE ? ", "%$telefone%" );
         }
+
+        
 
         $stmt = $query->execute( $this->db );
 

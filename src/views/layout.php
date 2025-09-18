@@ -6,13 +6,15 @@
     <title>AgendAki<?= $titulo ?? "" ?></title>
     <link rel="stylesheet" href="/assets/styles/layout.css">
     <link rel="stylesheet" href="/assets/styles/toast.css">
+    <link rel="stylesheet" href="/assets/styles/card.css">
+    <link rel="stylesheet" href="/assets/styles/select.css">
 </head>
 <body>
     <script src="/assets/script/validador.js"></script>
     <script src="/assets/script/mascara.js"></script>
     <script src="/assets/script/toast.js"></script>
     <script src="/assets/script/util.js"></script>
-
+    
     <div id="toast-container"></div>
     <?php
         use Vennizlab\Agendaki\helpers\Menu;
@@ -27,6 +29,7 @@
         <?= $conteudo ?>
     </main>
 
+    <script src="/assets/script/select.js"></script>
     <script src="/assets/script/agendaki.js.php"></script>
 </body>
 </html>

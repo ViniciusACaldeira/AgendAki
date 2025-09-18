@@ -1,8 +1,7 @@
 <?php
 namespace Vennizlab\Agendaki\controllers;
 
-use DateInterval;
-use DateTime;
+use Vennizlab\Agendaki\core\Auth;
 use Vennizlab\Agendaki\core\Controller;
 use Vennizlab\Agendaki\helpers\FiltroHelper;
 use Vennizlab\Agendaki\models\AgendamentoModel;
@@ -30,10 +29,23 @@ class AgendamentoControllerAPI extends Controller
         {
             $paginacao = $this->getPaginacao( );
             $filtro = new FiltroHelper( $this );
-            $filtro->add( "data" );
-            $filtro->add( "funcionarios" );
-            $filtro->add( "servicos" );
-            $filtro->add( "clientes" );
+
+            if( Auth::isFuncionario( ) )
+            {
+                $filtro->add( "data" );
+                $filtro->add( "funcionarios" );
+                $filtro->add( "servicos" );
+                $filtro->add( "clientes" );
+            }
+            else
+            {
+                $filtro->addFiltro( "clientes", Auth::usuario( )->id );
+            }
+
+            $filtro->add( "apartir" );
+            
+            if( !Auth::isFuncionario( ) )
+                $filtro->addFiltro( "ORDERBY", "ASC" );
 
             $agendamentoModel = new AgendamentoModel( );
             
@@ -50,7 +62,11 @@ class AgendamentoControllerAPI extends Controller
         if( $this->isPOST( ) )
         {
             $agenda_servico = $this->getCampo( "agenda_servico" );
-            $usuario_id = $this->getCampo( "usuario_id" );
+            if( Auth::isFuncionario( ) )
+                $usuario_id = $this->getCampo( "usuario_id", Auth::usuario( )->id );
+            else
+                $usuario_id = Auth::usuario( )->id;
+
             $inicio = $this->getCampo( "inicio" );
 
             $agendamentoModel = new AgendamentoModel( );

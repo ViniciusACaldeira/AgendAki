@@ -70,6 +70,7 @@
 
 <script src="/assets/script/agendaki.js.php"></script>
 <script src="/assets/script/toast.js"></script>
+<script src="/assets/script/mascara.js"></script>
 <script>
     const sessoes = ['login', 'cadastro'];
 
@@ -109,7 +110,7 @@
             if( data['status'] != 200 )
                 mostrarToast( retorno['mensagem'], TOAST_ERRO );
             else
-                window.location = '/dashboard';
+                window.location = '/';
         })
         .finally( )
         .catch( error => {

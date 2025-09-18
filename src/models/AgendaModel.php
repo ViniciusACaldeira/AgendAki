@@ -163,8 +163,9 @@ class AgendaModel extends Model{
     public function listar( FiltroHelper $filtro, ?Paginacao $paginacao = null )
     {
         $query = new DatabaseHelper( );
-        $query->setSQL( "SELECT a.id, u.nome, a.data, a.inicio, a.fim, a.tipo_agenda_id, a.tamanho, a.quantidade_fila 
+        $query->setSQL( "SELECT a.id, u.nome, a.data, a.inicio, a.fim, a.tipo_agenda_id, a.tamanho, a.quantidade_fila, sa.id 'agenda_servico_id'
                          FROM agenda a
+                         LEFT JOIN agenda_servico sa ON sa.agenda_id = a.id
                          INNER JOIN funcionario f ON f.id = a.funcionario_id
                          INNER JOIN usuario u ON u.id = f.usuario_id" );
 
@@ -185,6 +186,9 @@ class AgendaModel extends Model{
 
         if( $filtro->tem( "id" ) )
             $query->addCondicao( "a.id = ?", $filtro->get( "id" ) );    
+
+        if( $filtro->tem( "servico" ) )
+            $query->addCondicao( "sa.servico_id = ?", $filtro->get( "servico" ) );
 
         if( $filtro->tem( "funcionario" ) )
         {
@@ -277,6 +281,9 @@ class AgendaModel extends Model{
             }
         }
         
+        if( $tipo != TipoAgenda::SLOT )
+            $validacao->addErro( "Só é permitido o cadastro do Tipo SLOT." );
+
         if( $tipo == TipoAgenda::DIFERENCA_LIMITADA || $tipo == TipoAgenda::SLOT )
             $validacao->validaHorario( "O tamanho ($tamanho) é inválido, esperasse um horário válido.", $tamanho);
 
@@ -349,6 +356,8 @@ class AgendaModel extends Model{
         $query = new DatabaseHelper( );
         $query->setSQL( "SELECT * FROM tipo_agenda" );
         $query->setPaginacao( $paginacao );
+
+        $query->addCondicao( "id = ?", TipoAgenda::SLOT );
 
         if( $filtro->tem( "id" ) )
             $query->addCondicao( "id = ?", $filtro->get( "id" ) );

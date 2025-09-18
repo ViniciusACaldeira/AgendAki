@@ -248,3 +248,7 @@ h1
         padding: 10px;
     }
 }
+
+.escondido{
+    display: none;
+}

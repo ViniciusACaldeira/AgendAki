@@ -109,3 +109,42 @@ function redireciona( url )
 {
   window.location = url;
 }
+
+function formatarPreco( texto )
+{
+  return new Intl.NumberFormat( "pt-BR", { style: "currency", currency: "BRL" } ).format( texto ) ; 
+}
+
+function dateToString( date )
+{
+  const ano = date.getFullYear( );
+  const mes = String( date.getMonth( ) + 1 ).padStart( 2, "0" );
+  const dia = String( date.getDate( ) ).padStart( 2, "0" );
+
+  return `${ano}-${mes}-${dia}`;
+}
+
+function stringToDate( data )
+{
+  const [ano, mes, dia] = data.split("-");
+  const dataLocal = new Date(ano, mes - 1, dia);
+
+  return dataLocal;
+}
+
+function toMinutes( horaStr ) 
+{
+  const [h, m] = horaStr.split(":").map(Number);
+  return h * 60 + m;
+}
+
+function filtrarHorarios( horarios, min, max ) 
+{
+  const minMin = toMinutes(min);
+  const maxMin = toMinutes(max);
+
+  return horarios.filter(hora => {
+    const totalMin = toMinutes(hora);
+    return totalMin >= minMin && totalMin <= maxMin;
+  });
+}
