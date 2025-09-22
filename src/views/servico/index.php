@@ -1,6 +1,6 @@
 
 <link rel="stylesheet" href="/assets/styles/servico/index.css">
-<a href="/dashboard">Voltar</a>
+<a href="/dashboard" class="btn-voltar">Voltar</a>
 
 <h1>Serviço</h1>
 <a href="/servico/cadastro">Cadastrar serviço</a>

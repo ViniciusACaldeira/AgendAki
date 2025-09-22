@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="/assets/styles/agenda/cadastro.css">
 <link rel="stylesheet" href="/assets/styles/calendario.css">
 
-<a href="/agenda">Voltar</a>
+<a href="/agenda" class="btn-voltar">Voltar</a>
 
 <section>
     <h1>Cadastro</h1>

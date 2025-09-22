@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="/assets/styles/cadastro.css">
 
-<a href="/funcionario">Voltar</a>
+<a href="/funcionario" class="btn-voltar">Voltar</a>
 
 <section>
     <h1>Cadastro</h1>

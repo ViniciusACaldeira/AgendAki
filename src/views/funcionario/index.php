@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="/assets/styles/tabela.css">
 
 
-<a href="/dashboard">voltar</a>
+<a href="/dashboard" class="btn-voltar">Voltar</a>
 
 <h1>Funcionário</h1>
 <a href="/funcionario/cadastro">Cadastrar Funcionário</a>

@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="/assets/styles/tabela.css">
-<a href="/dashboard">Voltar</a>
+<a href="/dashboard" class="btn-voltar">Voltar</a>
 
 <h1>Agenda</h1>
 <a href="/agenda/cadastro">Cadastrar Agenda</a>

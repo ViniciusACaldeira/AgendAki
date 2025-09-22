@@ -31,7 +31,7 @@
 </style>
 
 
-<a href="/servico">Voltar</a>
+<a href="/servico" class="btn-voltar">Voltar</a>
 
 <h1 id="nome_servico">Serviço</h1>
 

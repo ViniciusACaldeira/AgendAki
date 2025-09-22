@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="/assets/styles/funcionario/detalhe.css">
-<a href="/funcionario">Voltar</a>
+<a href="/funcionario" class="btn-voltar">Voltar</a>
 
 <h1 id="nome">Detalhe </h1>
 <p id="email">Email: </p>
