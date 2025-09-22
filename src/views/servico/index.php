@@ -3,7 +3,7 @@
 <a href="/dashboard" class="btn-voltar">Voltar</a>
 
 <h1>Serviço</h1>
-<a href="/servico/cadastro">Cadastrar serviço</a>
+<a href="/servico/cadastro" class="btn-sub">Cadastrar Serviço</a>
 
 <br>
 <link rel="stylesheet" href="/assets/styles/tabela.css">

@@ -2,7 +2,7 @@
 <a href="/dashboard" class="btn-voltar">Voltar</a>
 
 <h1>Agenda</h1>
-<a href="/agenda/cadastro">Cadastrar Agenda</a>
+<a href="/agenda/cadastro" class="btn-sub">Cadastrar Agenda</a>
 <form id="filtro_agenda" action="get">
     <div class="field">
         <label for="data">Data</label>

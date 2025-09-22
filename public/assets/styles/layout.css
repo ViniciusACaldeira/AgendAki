@@ -156,6 +156,31 @@ h1
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
+.btn-sub {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-top: 8px;
+    margin-bottom: 16px;
+}
+
+.btn-sub:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.btn-sub:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
 @media (min-width: 769px) 
 {
     nav ul li:hover > ul.submenu {

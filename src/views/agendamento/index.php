@@ -3,7 +3,7 @@
 <a href="dashboard" class="btn-voltar">Voltar</a>
 
 <h1>Agendamento</h1>
-<a href="agendamento/cadastro">Cadastrar agendamento</a>
+<a href="agendamento/cadastro" class="btn-sub">Cadastrar Agendamento</a>
 
 
 <form id="filtro_agendamento">

@@ -4,7 +4,7 @@
 <a href="/dashboard" class="btn-voltar">Voltar</a>
 
 <h1>Funcionário</h1>
-<a href="/funcionario/cadastro">Cadastrar Funcionário</a>
+<a href="/funcionario/cadastro" class="btn-sub">Cadastrar Funcionário</a>
 
 <form id="filtro_funcionarios" method="GET">
     <div class="field">
