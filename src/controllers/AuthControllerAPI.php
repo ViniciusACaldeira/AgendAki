@@ -2,6 +2,7 @@
 
 namespace Vennizlab\Agendaki\controllers;
 
+use Vennizlab\Agendaki\core\Auth;
 use Vennizlab\Agendaki\core\Controller;
 use Vennizlab\Agendaki\models\AuthModel;
 use Vennizlab\Agendaki\models\UsuarioModel;
@@ -40,6 +41,22 @@ class AuthControllerAPI extends Controller{
             $usuarioModel = new UsuarioModel( );
             $retorno = $usuarioModel->cadastrarV1( $nome, $telefone, $email, $senha, $senha_confirmar );
             return $this->responseRetorno( $retorno );
+        }
+        else
+            return $this->responseNaoEncontrado( );
+    }
+
+    public function alterarSenha( )
+    {
+        if( $this->isPOST( ) )
+        {
+            $usuario = Auth::usuario( )->id;
+            $senha = $this->getCampo( "senha" );
+            $senha_confirmar = $this->getCampo( "senha_confirmar" );
+
+            $usuarioModel = new UsuarioModel( );
+            
+            return $this->responseRetorno( $usuarioModel->atualizarSenha( $usuario, $senha, $senha_confirmar ) );
         }
         else
             return $this->responseNaoEncontrado( );

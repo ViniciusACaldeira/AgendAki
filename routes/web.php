@@ -45,6 +45,9 @@ return [
     '/agendamento/cadastro' => [AgendamentoController::class, 'cadastro'],
     '/agendamento/cadastrar' => [AgendamentoController::class, 'cadastrar'],
 
+    '/perfil' => [UsuarioController::class, "perfil"],
+    '/alterarSenha' => [UsuarioController::class, "alterarSenha" ],
+    
     '' => [HomeController::class, "index" ],
     // Adicione outras rotas aqui
 
@@ -78,5 +81,8 @@ return [
 
     '/api/auth/login' => [AuthControllerAPI::class, "login"],
     '/api/auth/cadastrar' => [AuthControllerAPI::class, "cadastrar" ],
+    '/api/auth/senha' => [AuthControllerAPI::class, "alterarSenha"],
 
+    "/api/usuario" => [UsuarioControllerAPI::class, "usuario"],
+    "/api/usuario/alterar" => [UsuarioControllerAPI::class, "alterar" ],
 ];

@@ -66,10 +66,12 @@ class Menu{
             new MenuDTO( "/agendamento", "Agendamento", [
                 new MenuDTO( "/agendamento/cadastro", "Cadastrar Agendamento" )
             ] ),
+            new MenuDTO( "/perfil", "Meu Perfil" )
         ];
 
         $this->usuario = [
-            new MenuDTO( "/", "Inicio" )
+            new MenuDTO( "/", "Inicio" ),
+            new MenuDTO( "/perfil", "Meu Perfil" )
         ];
     }
 

@@ -4,9 +4,11 @@ namespace Vennizlab\Agendaki\models;
 
 use Exception;
 use PDO;
+use Vennizlab\Agendaki\core\Auth;
 use Vennizlab\Agendaki\core\Model;
 use Vennizlab\Agendaki\core\Retorno;
 use Vennizlab\Agendaki\helpers\DatabaseHelper;
+use Vennizlab\Agendaki\helpers\FiltroHelper;
 use Vennizlab\Agendaki\helpers\ValidacaoHelper;
 
 class UsuarioModel extends Model{
@@ -188,4 +190,159 @@ class UsuarioModel extends Model{
         }
         
     }
+
+    public function alterar( $usuario, FiltroHelper $filtro )
+    {
+        $validacao = new ValidacaoHelper( );
+        
+        if( !$this->existeUsuarioByID( $usuario ) || 
+            ( !Auth::isFuncionario( ) && $usuario !== Auth::usuario( )->id ) )
+            $validacao->addErro( "Usuário inválido." );
+
+        $parametrosValores = [];
+        $parametrosCampo = [];
+
+        if( $filtro->tem( "nome" ) )
+        {
+            $parametrosValores[] = $filtro->get( "nome" );
+            $parametrosCampo[] = "nome = ?";
+        }
+
+        if( $filtro->tem( "senha" ) )
+        {
+            $senha = $filtro->get( "senha" );
+            
+            $parametrosValores[] = password_hash( $senha, PASSWORD_DEFAULT );
+            $parametrosCampo[] = "senha = ?";
+        }
+
+        $usuarioAntigo = $this->get( $usuario );
+
+        $email = "";
+        $telefone = "";
+
+        if( $filtro->tem( "email" ) )
+        {
+            $email = $filtro->get( "email" );
+
+            $parametrosValores[] = $email;
+            $parametrosCampo[] = "email = ?";
+
+            $validacao->email( "Email inválido", $email );
+        }
+
+        if( $filtro->tem( "telefone" ) )
+        {
+            $telefone = $filtro->get( "telefone" );
+
+            $validacao->vazio( "Telefone inválido.", $telefone );
+
+            $parametrosValores[] = $telefone;
+            $parametrosCampo[] = "telefone = ?";
+        }
+
+        if( !$validacao->temErro( ) )
+        {
+            $existe = false;
+
+            if( $usuarioAntigo->is( Retorno::SUCESSO ) )
+            {
+                $usuarioAntigo = $usuarioAntigo->getMensagem( );
+
+                if( $telefone != $usuarioAntigo['telefone'] )
+                    $existe = $this->existeUsuario( "", $telefone );
+
+                if( !$existe && $email != $usuarioAntigo['email'] )
+                    $existe = $this->existeUsuario( $email, "" );
+
+                if( $existe )
+                    $validacao->addErro( "Dados inválidos." );
+            }
+            else
+                $validacao->addErro( $usuarioAntigo->getMensagem( ) );
+        }
+
+        if( count( $parametrosCampo ) == 0 )
+            $validacao->addErro( "É necessário informar um campo para ser atualizado." );
+
+        if( $validacao->temErro( ) )
+            return $validacao->retorno( );
+
+        $query = new DatabaseHelper( );
+
+        $update = "";
+
+        for( $i = 0; $i < count( $parametrosCampo ); $i++ )
+        {
+            $campo = $parametrosCampo[$i];
+             
+            if( $i != 0 )
+                $update .= ", $campo";
+            else
+                $update .= $campo;
+        }
+
+        $query->setSQL( "UPDATE usuario SET $update" );
+        $query->addParametro( $parametrosValores );
+        $query->addCondicao( "id = ?", $usuario );
+
+        try
+        {
+            $stmt = $query->execute( $this->db );
+
+            if( $stmt )
+                return new Retorno( Retorno::SUCESSO, "Atualizado com sucesso." );
+            else
+                return new Retorno( Retorno::ERRO, "Falha ao alterar usuário." );
+        }
+        catch( Exception $e )
+        {
+            return new Retorno( Retorno::ERRO, "Falha ao alterar usuário." );
+        }
+    }
+
+    public function get( $id )
+    {
+        $validacao = new ValidacaoHelper( );
+
+        if( !$this->existeUsuarioByID( $id ) )
+            $validacao->addErro( "Usuário inválido." );
+
+        if( $validacao->temErro( ) )
+            return $validacao->retorno( );
+    
+        try
+        {
+            $query = new DatabaseHelper( );
+            $query->setSQL( "SELECT nome, telefone, email FROM usuario" );
+            $query->addCondicao( "id = ?", $id );
+
+            $stmt = $query->execute( $this->db );
+
+            if( $stmt )
+                 return new Retorno( Retorno::SUCESSO, $stmt->fetch( PDO::FETCH_ASSOC ) );
+            else
+                return new Retorno( Retorno::ERRO, "Falha ao coletar os dados do usuário." );
+        }
+        catch( Exception $e )
+        {
+            return new Retorno( Retorno::ERRO, "Falha na coleta do usuário." );
+        }
+    }
+
+    public function atualizarSenha( $id, $senha, $senha_confirmar )
+    {
+        $validacao = new ValidacaoHelper( );
+
+        if( $senha !== $senha_confirmar )
+            $validacao->addErro( "As senhas não se coincidem." );
+    
+        if( $validacao->temErro( ) )
+            return $validacao->retorno( );
+
+        $filtro = new FiltroHelper( null );
+        $filtro->addFiltro( "senha", $senha );
+
+        return $this->alterar( $id, $filtro );
+    } 
 }

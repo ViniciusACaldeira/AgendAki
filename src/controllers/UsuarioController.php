@@ -56,4 +56,14 @@ class UsuarioController extends Controller
         
         $this->redirect("auth/login", $retorno);
     }
+
+    public function perfil( )
+    {
+        $this->view( "usuario/index" );
+    }
+
+    public function alterarSenha( )
+    {
+        $this->view( "usuario/alterarSenha" );
+    }
 }

@@ -79,6 +79,17 @@ class ValidacaoHelper{
         return $this->validacao;
     }
 
+    public function email( $mensagem, $email )
+    {
+        if( !filter_var($email, FILTER_VALIDATE_EMAIL) )
+        {
+            $this->addErro( $mensagem );
+            return true;
+        }
+        
+        return false;
+    }
+
     public function addErro( $mensagem )
     {
         if( is_array($mensagem) )

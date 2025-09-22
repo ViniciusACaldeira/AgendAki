@@ -133,6 +133,29 @@ h1
     cursor: pointer;
 }
 
+.btn-voltar {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #f0f0f0; /* cinza claro */
+    color: #333;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.btn-voltar:hover {
+    background-color: #e0e0e0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.btn-voltar:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
 @media (min-width: 769px) 
 {
     nav ul li:hover > ul.submenu {
