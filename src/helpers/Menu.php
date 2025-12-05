@@ -93,7 +93,7 @@ class Menu{
             $html .= $rota->toHTML( );
         
         $html .= "          <li class='logout'>
-                                <a href='/auth/logout' class='logout-link'>Logout</a>
+                                <a href='/auth/logout' class='logout-link'>Sair</a>
                             </li>
                         </ul>
                     </div>

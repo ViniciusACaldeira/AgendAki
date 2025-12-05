@@ -654,10 +654,6 @@
                 <span>Valor: ${formatarPreco( agendamento.valor )}</span>
                 <span>Funcionário: ${agendamento.nome_funcionario}</span>
             </div>
-            <div class="footer">
-                <button class="primary">Confirmar</button>
-                <button class="danger">Cancelar</button>
-            </div>
         `;
 
         return card;

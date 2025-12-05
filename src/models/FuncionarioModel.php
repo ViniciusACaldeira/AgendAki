@@ -136,9 +136,15 @@ class FuncionarioModel extends Model{
             
             if( !empty( $telefone ) )
                 $query->addCondicao( "u.telefone LIKE ? ", "%$telefone%" );
-        }
-
+        }      
         
+        if( $filtro->tem( "email" ) )
+        {
+            $email = $filtro->get( "email" );
+
+            if( !empty( $email ) )
+                $query->addCondicao( "u.email LIKE ? ", "%$email%" );
+        }
 
         $stmt = $query->execute( $this->db );
 
